@@ -1,0 +1,14 @@
+{
+    "process" : [
+        {
+            "working-dir": "./",
+            "script": "worker1.js",
+            "args": []
+        },
+        {
+            "working-dir": "./",
+            "script": "worker2.js",
+            "args": []
+        }
+    ]
+}

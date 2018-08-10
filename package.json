@@ -5,7 +5,8 @@
 	"main": "paraemu.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"beautify": "eslint --fix *.js"
+		"beautify": "eslint --fix *.js",
+		"paraemu": "node ./paraemu-cli.js ./config.sample.json --arg1 --arg2"
 	},
 	"repository": {
 		"type": "git",
