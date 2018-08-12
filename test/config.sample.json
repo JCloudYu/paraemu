@@ -2,12 +2,12 @@
     "processes" : [
         {
         	"tag": "Super Core",
-            "script": "worker1.js",
+        	"root": "./sub1",
+            "script": "./worker1.js",
             "args": []
         },
         {
-            "root": "./",
-            "script": "worker2.js"
+            "script": "./sub2/worker2.js"
         }
     ]
 }
