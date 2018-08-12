@@ -5,5 +5,6 @@
 	
 	process.isCLI = true;
 	process.argv.splice(0, 2);
-	require('./paraemu');
+	const pemu = require('./paraemu');
+	pemu.load(process.argv[0]);
 })();
