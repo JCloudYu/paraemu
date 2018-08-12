@@ -3,43 +3,58 @@
 	
 	const pemu = require('../../paraemu');
 	
-	console.log( `worker2: ${process.cwd()}` );
+	let
+	string  = "[WORKER2] Worker Started\n";
+	string += `          PID: ${process.pid}\n`;
+	string += `          PPID: ${process.ppid}\n`;
+	string += `          ID: ${pemu.id}\n`;
+	string += `          TAG: ${pemu.tag}\n`;
+	string += `          ARGS: ${JSON.stringify(pemu.args)}\n`;
+	string += `          CWD: ${process.cwd()}`;
+	console.log(string);
+	
+	
 	try {
-		require( './other-module' );
-		console.log( "worker2: other-module loaded!" );
+		require( './test-module-2' );
+		console.log( "[WORKER2] test-module-2 loading test - passed" );
 	}
 	catch(e) {
-		console.log( "worker2: other-module load failed!" );
+		console.log( "[WORKER2] test-module-2 loading test - failed" );
 	}
-	
 	
 	try {
 		require( 'tiinytiny' );
-		console.log( "worker2: tiinytiny loaded!" );
+		console.log( "[WORKER2] node_modules test - failed" );
 	}
 	catch(e) {
-		console.log( "worker2: tiinytiny load failed!" );
+		console.log( "[WORKER2] node_modules test - passed" );
 	}
 	
-	console.log({
-		who: 'worker2',
-		id: pemu.id,
-		tag: pemu.tag,
-		args: pemu.args
-	});
+	try {
+		require( './test-module-1' );
+		console.log( "[WORKER2] test-module-1 loading test - failed" );
+	}
+	catch(e) {
+		console.log( "[WORKER2] test-module-1 loading test - passed" );
+	}
+	
 	
 	pemu
 	.on('event1', (event, ...args)=>{
-		console.log({
-			event,
-			me: pemu.id,
-			who: 'worker2',
-			args
-		});
+		let msg = `[WORKER2] receiving event (${JSON.stringify({event, args})})\n`;
+		if ( event.type !== "event1" || event.sender_tag === "proc1" ) {
+			console.log( `${msg}[WORKER2] event test - passed` );
+		}
+		else {
+			console.log( `${msg}[WORKER2] event test - failed` );
+		}
 	})
 	.on('tasks-ready', (e)=>{
-		console.log("worker2 synced");
+		let prev = (new Date()).getTime();
+		console.log( `[WORKER2] tasks-ready received!`);
 		setTimeout(()=>{
+			let now = (new Date()).getTime();
+			console.log( `[WORKER2] exiting! (${Math.floor((now-prev)/1000)} seconds)`);
 			process.exit(0);
 		}, 5000);
 	});
