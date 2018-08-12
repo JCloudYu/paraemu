@@ -43,10 +43,11 @@
 			const {root=null, tag=null, script} = processInfo;
 			
 			const scriptPath = path.resolve(_descriptorDir, root||'', script);
+			const workingDir = path.resolve(_descriptorDir, root||'');
 			
 			// Prepare script info
 			cluster.setupMaster({
-				cwd:path.dirname(scriptPath), exec:path.basename(scriptPath),
+				cwd:workingDir, exec:scriptPath,
 				args:processInfo.args || []
 			});
 			
