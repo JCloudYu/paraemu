@@ -1,7 +1,25 @@
 (()=>{
 	'use strict';
 	
-	const pemu = require('./paraemu.js');
+	const pemu = require('../../paraemu');
+	
+	console.log( `worker2: ${process.cwd()}` );
+	try {
+		require( './other-module' );
+		console.log( "worker2: other-module loaded!" );
+	}
+	catch(e) {
+		console.log( "worker2: other-module load failed!" );
+	}
+	
+	
+	try {
+		require( 'tiinytiny' );
+		console.log( "worker2: tiinytiny loaded!" );
+	}
+	catch(e) {
+		console.log( "worker2: tiinytiny load failed!" );
+	}
 	
 	console.log({
 		who: 'worker2',
