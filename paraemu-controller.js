@@ -47,8 +47,7 @@
 			
 			// Prepare script info
 			cluster.setupMaster({
-				cwd:workingDir, exec:scriptPath,
-				args:processInfo.args || []
+				cwd:workingDir, exec:scriptPath
 			});
 			
 			
@@ -57,7 +56,8 @@
 			const worker = cluster.fork({
 				paraemu: JSON.stringify({
 					id: workerId,
-					tag: workerTag
+					tag: workerTag,
+					args: processInfo.args || []
 				})
 			});
 			

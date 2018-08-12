@@ -22,7 +22,7 @@
 	// Prepare environmental arguments
 	const _env_conf = JSON.parse(process.env.paraemu);
 	Object.defineProperties(exports, {
-		args:{value:[], writable:false, configurable:false, enumerable:true},
+		args:{value:_env_conf.args, writable:false, configurable:false, enumerable:true},
 		tag:{value:_env_conf.tag, writable:false, configurable:false, enumerable:true},
 		id:{value:_env_conf.id, writable:false, configurable:false, enumerable:true},
 	});
@@ -32,6 +32,7 @@
 		process.send({
 			type:'paraemu-event',
 			sender:exports.id,
+			sender_tag:exports.tag,
 			event, args
 		})
 	};
@@ -53,6 +54,6 @@
 		}
 		
 		let args = Array.isArray(msg.args) ?  msg.args : [];
-		_ori_emit(msg.event, {type:msg.event, sender:msg.sender}, ...args);
+		_ori_emit(msg.event, {type:msg.event, sender_tag:msg.sender_tag, sender:msg.sender}, ...args);
 	});
 })();
