@@ -3,9 +3,19 @@
 
     const pemu = require('./paraemu.js');
 
-    console.log('It is worker1');
-    pemu.on('event1', (...args) => {
-        console.log('worker1: event1');
+   console.log({
+    	who: 'worker1',
+    	id: pemu.id,
+    	tag: pemu.tag,
+    	args: pemu.args
+    });
+    pemu.on('event1', (event, ...args)=>{
+        console.log({
+        	event,
+        	me: pemu.id,
+        	who:'worker1',
+        	args
+        });
     });
     
     setTimeout(()=>{
@@ -14,5 +24,5 @@
     
     setTimeout(()=>{
     	process.exit(0);
-    }, 10000);
+    }, 5000);
 })();

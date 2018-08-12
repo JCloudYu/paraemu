@@ -2,7 +2,7 @@
 	"use strict";
 	
 	
-	let __SERIAL_COUNTER = 0;
+	let __SERIAL_COUNTER = Math.floor(Math.random() * 10000000) + 14776336;
 	const cluster		 = require( 'cluster' );
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
@@ -19,6 +19,7 @@
 		descriptorDir: null,
 		workers: null
 	};
+	const __ori_emit = __EVENT_POOL.emit.bind(__EVENT_POOL);
 	
 	
 	__EVENT_POOL.load=(confPath, options)=>{
@@ -29,33 +30,34 @@
 		
 		
 		const _options		 = options;
-		const _descriptor	 = __STATES.descriptor = path.resolve(confPath);
-		const _descriptorDir = __STATES.descriptorDir = path.dirname(_descriptor);
-		const _config		 = __STATES.currentConf = JSON.parse(fs.readFileSync(_descriptor, 'utf8'));
-		const _workers		 = __STATES.workers = {};
+		const _descriptor	 = __STATES.descriptor		= path.resolve(confPath);
+		const _descriptorDir = __STATES.descriptorDir	= path.dirname(_descriptor);
+		const _config		 = __STATES.currentConf		= JSON.parse(fs.readFileSync(_descriptor, 'utf8'));
+		const _workers		 = __STATES.workers			= {};
 		
 		
 		const {processes} = _config;
 		processes.forEach((processInfo)=>{
 			__STATES.noJobs = __STATES.noJobs || true;
 		
-			const {["working-dir"]:working_dir=_descriptorDir, script, tag=null} = processInfo;
+			const {root=null, tag=null, script} = processInfo;
 			
+			const scriptPath = path.resolve(_descriptorDir, root||'', script);
 			
 			// Prepare script info
 			cluster.setupMaster({
-				cwd:working_dir, exec:script,
-				args: processInfo.args || []
+				cwd:path.dirname(scriptPath), exec:path.basename(scriptPath),
+				args:processInfo.args || []
 			});
 			
 			
 			const workerId = __TOKENFY(++__SERIAL_COUNTER);
-			const workerTag = processInfo[ 'tag' ] || workerId;
+			const workerTag = tag || workerId;
 			const worker = cluster.fork({
-				paraemu: {
+				paraemu: JSON.stringify({
 					id: workerId,
 					tag: workerTag
-				}
+				})
 			});
 			
 			worker._id = workerId;
@@ -64,6 +66,23 @@
 		});
 	};
 	
+	__EVENT_POOL.emit=(event, ...args)=>{
+		const eventInfo = {
+			type:'paraemu-event',
+			event:event, args
+		};
+	
+		for ( let _id in __STATES.workers ) {
+			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
+			
+			const workerInfo = __STATES.workers[_id];
+			if ( workerInfo.available ) {
+				workerInfo.worker.send(eventInfo);
+			}
+		}
+	};
+	
+	
 	// Handle global events
 	cluster
 	.on( 'online', (worker)=>{
@@ -71,14 +90,14 @@
 		state.available = true;
 		
 		
-		__EVENT_POOL.emit( 'worker-started', worker._tag );
+		__ori_emit( 'worker-started', {type:'worker-started'}, worker._tag );
 	})
 	.on( 'exit', (worker, code, signal)=>{
 		const state = __STATES.workers[worker._id];
 		state.available = false;
 		state.terminated = true;
 		
-		__EVENT_POOL.emit( 'worker-terminated', worker._tag, code, signal );
+		__ori_emit( 'worker-terminated', {type:'worker-terminated'}, worker._tag, code, signal );
 		
 		
 		// Leftover check...
@@ -92,7 +111,7 @@
 		
 		if ( finished ) {
 			__STATES.noJobs = true;
-			__EVENT_POOL.emit( 'tasks-finished', worker._tag );
+			__ori_emit( 'tasks-finished', {type:'tasks-finished'}, worker._tag );
 		}
 	})
 	.on( 'disconnected', (worker)=>{
@@ -102,7 +121,7 @@
 	.on( 'message', (worker, msg)=>{
 		let msgObj;
 		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
-			msgObj = {type:"paraemu-event", event:'message', args:[msg]};
+			msgObj = {type:"paraemu-event", sender:null, event:'message', args:[msg]};
 		}
 		else {
 			msgObj = msg;
@@ -122,7 +141,8 @@
 	
 	
 	const DEFAULT_RANGES = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	function __TOKENFY(index=0, tokens=DEFAULT_RANGES) {
+	const SHUFFLED_RANGES = DEFAULT_RANGES.split('').sort(function(){return 0.5-Math.random()}).join('');
+	function __TOKENFY(index=0, tokens=SHUFFLED_RANGES) {
 		let length = tokens.length, token = tokens[index%length];
 		index = Math.floor(index/length);
 		while( index > 0 ) {
