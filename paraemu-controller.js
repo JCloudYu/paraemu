@@ -62,7 +62,7 @@
 			
 			worker._id = workerId;
 			worker._tag = workerTag;
-			_workers[ workerId ] = { available:false, terminated:false, worker };
+			_workers[ workerId ] = { instantiated:false, available:false, terminated:false, worker };
 		});
 	};
 	
@@ -87,10 +87,24 @@
 	cluster
 	.on( 'online', (worker)=>{
 		const state = __STATES.workers[worker._id];
+		state.instantiated = true;
 		state.available = true;
 		
 		
 		__ori_emit( 'worker-started', {type:'worker-started'}, worker._tag );
+		
+		// Leftover check...
+		let finished = true;
+		for ( let _id in __STATES.workers ) {
+			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
+			
+			const workerInfo = __STATES.workers[_id];
+			finished = finished && workerInfo.instantiated;
+		}
+		
+		if ( finished ) {
+			__ori_emit( 'tasks-ready', {type:'tasks-ready'} );
+		}
 	})
 	.on( 'exit', (worker, code, signal)=>{
 		const state = __STATES.workers[worker._id];
@@ -111,7 +125,7 @@
 		
 		if ( finished ) {
 			__STATES.noJobs = true;
-			__ori_emit( 'tasks-finished', {type:'tasks-finished'}, worker._tag );
+			__ori_emit( 'tasks-finished', {type:'tasks-finished'} );
 		}
 	})
 	.on( 'disconnected', (worker)=>{
@@ -121,7 +135,7 @@
 	.on( 'message', (worker, msg)=>{
 		let msgObj;
 		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
-			msgObj = {type:"paraemu-event", sender:null, event:'message', args:[msg]};
+			msgObj = {type:"paraemu-event", event:'message', args:[msg]};
 		}
 		else {
 			msgObj = msg;
