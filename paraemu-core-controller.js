@@ -1,14 +1,11 @@
 (()=>{
 	"use strict";
 	
-	
 	let __SERIAL_COUNTER = Math.floor(Math.random() * 10000000) + 14776336;
 	const cluster		 = require( 'cluster' );
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
 	const {EventEmitter} = require( 'events' );
-	
-	
 	
 	// Overall controller
 	const __EVENT_POOL = module.exports = new EventEmitter();
@@ -21,20 +18,15 @@
 	};
 	const __ori_emit = __EVENT_POOL.emit.bind(__EVENT_POOL);
 	
-	
 	__EVENT_POOL.load=(confPath, options)=>{
 		if ( !__STATES.noJobs ) {
 			throw new Error( "Existing tasks must be terminated to load new tasks!" );
 		}
 		
-		
-		
-		const _options		 = options;
 		const _descriptor	 = __STATES.descriptor		= path.resolve(confPath);
 		const _descriptorDir = __STATES.descriptorDir	= path.dirname(_descriptor);
 		const _config		 = __STATES.currentConf		= JSON.parse(fs.readFileSync(_descriptor, 'utf8'));
 		const _workers		 = __STATES.workers			= {};
-		
 		
 		const {processes} = _config;
 		const workerInfo  = [];
@@ -90,14 +82,12 @@
 		}
 	};
 	
-	
 	// Handle global events
 	cluster
 	.on( 'online', (worker)=>{
 		const state = __STATES.workers[worker._id];
 		state.instantiated = true;
 		state.available = true;
-		
 		
 		__ori_emit( 'worker-started', {type:'worker-started'}, worker._tag );
 		
@@ -120,7 +110,6 @@
 		state.terminated = true;
 		
 		__ori_emit( 'worker-terminated', {type:'worker-terminated'}, worker._tag, code, signal );
-		
 		
 		// Leftover check...
 		let finished = true;
@@ -158,9 +147,6 @@
 			}
 		}
 	});
-	
-	
-	
 	
 	const DEFAULT_RANGES = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	const SHUFFLED_RANGES = DEFAULT_RANGES.split('').sort(function(){return 0.5-Math.random()}).join('');
