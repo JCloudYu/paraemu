@@ -26,15 +26,22 @@
         ]
     }
     ```
-    Note: Only "script" is necessary.
+
+    Note:  
+    (1) Only "script" is necessary.  
+    (2) Process execute path is `./${root}/${script}`
 
 2. Write  script file:
     ```javascript
     // ./worker1.js
     const pemu = require('paraemu');
     // Event will cross processes
-    pemu.on('register_event_name', cb1);                     // register event
-    pemu.off('remove_event_name', cb2);                      // remove event
+    let cb = () => {
+        console.log('Hello world');
+    };
+    pemu.on('register_event_name', cb);                      // register event
+    pemu.once('register_once_event_name', cb);               // register event once
+    pemu.off('remove_event_name', cb);                       // remove event
     pemu.emit('trigger_event_name', [arg1], [arg2], [...]);  // trigger event
     ```
     Please refer to [Event Emitter](https://nodejs.org/api/events.html) for other usages.
