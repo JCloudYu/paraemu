@@ -37,27 +37,34 @@
 		
 		
 		const {processes} = _config;
+		const workerInfo  = [];
+		const workerIds	  = [];
 		processes.forEach((processInfo)=>{
-			__STATES.noJobs = __STATES.noJobs || true;
+			__STATES.noJobs = __STATES.noJobs && false;
 		
-			const {root=null, tag=null, script} = processInfo;
-			
+			const {root=null, tag=null, script, args:workerArgs=[]} = processInfo;
 			const scriptPath = path.resolve(_descriptorDir, root||'', script);
 			const workingDir = path.resolve(_descriptorDir, root||'');
+			const workerId	 = __TOKENFY(++__SERIAL_COUNTER);
+			const workerTag	 = tag || workerId;
 			
+			workerIds.push(workerId);
+			workerInfo.push({
+				scriptPath, workingDir, workerId, workerTag, workerArgs
+			});
+		});
+		
+		workerInfo.forEach((info)=>{
+			const {scriptPath, workingDir, workerId, workerTag, workerArgs} = info;
+		
 			// Prepare script info
 			cluster.setupMaster({
 				cwd:workingDir, exec:scriptPath
 			});
 			
-			
-			const workerId = __TOKENFY(++__SERIAL_COUNTER);
-			const workerTag = tag || workerId;
 			const worker = cluster.fork({
 				paraemu: JSON.stringify({
-					id: workerId,
-					tag: workerTag,
-					args: processInfo.args || []
+					id:workerId, tag:workerTag, args:workerArgs, worker_list:workerIds
 				})
 			});
 			

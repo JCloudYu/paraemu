@@ -27,14 +27,12 @@
 		args:{value:_env_conf.args, writable:false, configurable:false, enumerable:true},
 		tag:{value:_env_conf.tag, writable:false, configurable:false, enumerable:true},
 		id:{value:_env_conf.id, writable:false, configurable:false, enumerable:true},
+		collaborators:{value:_env_conf.worker_list.slice(0), writable:false, configurable:false, enumerable:true}
 	});
 	
 	// Overwrite default event emitter's behavior
 	exports.emit = (event, ...args)=>{
-		process.send({
-			type:'paraemu-event',
-			event, args
-		})
+		process.send({ type:'paraemu-event', event, args });
 	};
 	
 	// Prevent users from listening to message directly

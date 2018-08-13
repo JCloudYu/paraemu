@@ -10,7 +10,8 @@
 	string += `          ID: ${pemu.id}\n`;
 	string += `          TAG: ${pemu.tag}\n`;
 	string += `          ARGS: ${JSON.stringify(pemu.args)}\n`;
-	string += `          CWD: ${process.cwd()}`;
+	string += `          CWD: ${process.cwd()}\n`;
+	string += `          COLL: ${JSON.stringify(pemu.collaborators)}`;
 	console.log(string);
 	
 	
