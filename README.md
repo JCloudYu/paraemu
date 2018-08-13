@@ -8,9 +8,15 @@
 
 ### How to use ###
 
-1. Setting config file:
+1. Setting config file:  
     ```javascript
-    // ./config.json
+    /*
+    * ./config.json
+    *
+    * Note:
+    * (1) Script execute path is `./${root}/${script}`.
+    * (2) In "processes" value, only "script" is necessary.
+    */
     {
         "processes" : [
             {
@@ -27,15 +33,15 @@
     }
     ```
 
-    Note:  
-    (1) Only "script" is necessary.  
-    (2) Process execute path is `./${root}/${script}`
-
-2. Write  script file:
+2. Write script file:
     ```javascript
-    // ./worker1.js
+    /*
+    * ./worker1.js
+    *
+    * Note:
+    * (1) Events will trigger across processes.
+    */
     const pemu = require('paraemu');
-    // Event will cross processes
     let cb = () => {
         console.log('Hello world');
     };
