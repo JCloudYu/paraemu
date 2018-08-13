@@ -12,6 +12,8 @@
 	
 
 	
+
+
 	
 	const exports = module.exports = new EventEmitter();
 	const _ori_on = process.on.bind(process);
@@ -31,8 +33,6 @@
 	exports.emit = (event, ...args)=>{
 		process.send({
 			type:'paraemu-event',
-			sender:exports.id,
-			sender_tag:exports.tag,
 			event, args
 		})
 	};

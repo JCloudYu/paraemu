@@ -134,13 +134,13 @@
 		state.available = false;
 	})
 	.on( 'message', (worker, msg)=>{
-		let msgObj;
+		let msgObj = msg;
 		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
 			msgObj = {type:"paraemu-event", event:'message', args:[msg]};
 		}
-		else {
-			msgObj = msg;
-		}
+		
+		msg.sender = worker._id;
+		msg.sender_tag = worker._tag;
 		
 		for ( let _id in __STATES.workers ) {
 			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
