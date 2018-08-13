@@ -2,6 +2,7 @@
 	"use strict";
 	
 	let __SERIAL_COUNTER = Math.floor(Math.random() * 10000000) + 14776336;
+	const IS_WIN		 = (require( 'os' ).platform() === "win32");
 	const cluster		 = require( 'cluster' );
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
@@ -18,11 +19,13 @@
 	};
 	const __ori_emit = __EVENT_POOL.emit.bind(__EVENT_POOL);
 	
-	__EVENT_POOL.load=(confPath, options)=>{
+	__EVENT_POOL.load=(confPath, options={})=>{
 		if ( !__STATES.noJobs ) {
 			throw new Error( "Existing tasks must be terminated to load new tasks!" );
 		}
 		
+		
+		const _core_paths	 = (options.search_paths || []).join( IS_WIN ? ';' : ':' );
 		const _descriptor	 = __STATES.descriptor		= path.resolve(confPath);
 		const _descriptorDir = __STATES.descriptorDir	= path.dirname(_descriptor);
 		const _config		 = __STATES.currentConf		= JSON.parse(fs.readFileSync(_descriptor, 'utf8'));
@@ -57,7 +60,8 @@
 			const worker = cluster.fork({
 				paraemu: JSON.stringify({
 					id:workerId, tag:workerTag, args:workerArgs, worker_list:workerIds
-				})
+				}),
+				NODE_PATH:_core_paths
 			});
 			
 			worker._id = workerId;
