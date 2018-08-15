@@ -22,6 +22,7 @@
 	Object.defineProperties(exports, {
 		args:{value:_env_conf.args, writable:false, configurable:false, enumerable:true},
 		tag:{value:_env_conf.tag, writable:false, configurable:false, enumerable:true},
+		group:{value:_env_conf.group, writable:false, configurable:false, enumerable:true},
 		id:{value:_env_conf.id, writable:false, configurable:false, enumerable:true},
 		collaborators:{value:_env_conf.worker_list.slice(0), writable:false, configurable:false, enumerable:true}
 	});

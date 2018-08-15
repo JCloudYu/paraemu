@@ -1,15 +1,17 @@
 (()=>{
 	"use strict";
 	
-	let __SERIAL_COUNTER = Math.floor(Math.random() * 10000000) + 14776336;
 	
-	const GROUP_ID		 = __UUIDv4();
+	
+	const crypto		 = require( 'crypto' );
 	const IS_WIN		 = (require( 'os' ).platform() === "win32");
 	const cluster		 = require( 'cluster' );
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
 	const {EventEmitter} = require( 'events' );
-	const crypto		 = require( 'crypto' );
+	
+	const base32		 = require( './base32' );
+	const GROUP_ID		 = __GEN_RANDOM_ID();
 	
 	
 	
@@ -45,7 +47,7 @@
 			const {root=null, tag=null, script, args:workerArgs=[]} = processInfo;
 			const scriptPath = path.resolve(_descriptorDir, root||'', script);
 			const workingDir = path.resolve(_descriptorDir, root||'');
-			const workerId	 = __TOKENFY(++__SERIAL_COUNTER);
+			const workerId	 = __GEN_RANDOM_ID();
 			const workerTag	 = tag || workerId;
 			
 			workerIds.push(workerId);
@@ -64,7 +66,7 @@
 			
 			const worker = cluster.fork({
 				paraemu: JSON.stringify({
-					id:workerId, tag:workerTag, args:workerArgs, worker_list:workerIds
+					group:GROUP_ID, id:workerId, tag:workerTag, args:workerArgs, worker_list:workerIds
 				}),
 				NODE_PATH:_core_paths
 			});
@@ -150,7 +152,7 @@
 			msgObj = {type:"paraemu-event", event:'message', args:[msg]};
 		}
 		
-		msg.sender = worker._id;
+		msg.sender = `${GROUP_ID}-${worker._id}`;
 		msg.sender_tag = worker._tag;
 		
 		for ( let _id in __STATES.workers ) {
@@ -164,49 +166,7 @@
 	});
 	
 	
-	
-	
-	
-	
-	const DEFAULT_RANGES = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	const SHUFFLED_RANGES = DEFAULT_RANGES.split('').sort(function(){return 0.5-Math.random()}).join('');
-	function __TOKENFY(index=0, tokens=SHUFFLED_RANGES) {
-		let length = tokens.length, token = tokens[index%length];
-		index = Math.floor(index/length);
-		while( index > 0 ) {
-			token = tokens[index%length] + token;
-			index = Math.floor(index/length);
-		}
-		return token;
-	}
-	function __UUIDv4(){
-		let random_num = crypto.randomBytes(16);
-		random_num[6] = (random_num[6] & 0x0f) | 0x40;
-		random_num[8] = (random_num[8] & 0x3f) | 0x80;
-		
-		return [
-			random_num.slice( 0,  4).toString('hex'),
-			random_num.slice( 4,  6).toString('hex'),
-			random_num.slice( 6,  8).toString('hex'),
-			random_num.slice( 8, 10).toString('hex'),
-			random_num.slice(10, 16).toString('hex')
-		].join('-').toUpperCase();
-	}
-	function __UUIDv5(value, namespace) {
-		let val = Buffer.from(value);
-		let ns  = Buffer.from(namespace);
-		
-		
-		let bytes = crypto.createHash('sha1').update(Buffer.concat([ns, val])).digest();
-		bytes[6] = (bytes[6] & 0x0f) | 0x50;
-		bytes[8] = (bytes[8] & 0x3f) | 0x80;
-		
-		return [
-			bytes.slice( 0,  4).toString('hex'),
-			bytes.slice( 4,  6).toString('hex'),
-			bytes.slice( 6,  8).toString('hex'),
-			bytes.slice( 8, 10).toString('hex'),
-			bytes.slice(10, 16).toString('hex')
-		].join('-').toUpperCase();
+	function __GEN_RANDOM_ID(length=10) {
+		return base32(crypto.randomBytes(length));
 	}
 })();

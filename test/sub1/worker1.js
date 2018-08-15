@@ -7,6 +7,7 @@
 	string  = "[WORKER1] Worker Started\n";
 	string += `          PID: ${process.pid}\n`;
 	string += `          PPID: ${process.ppid}\n`;
+	string += `          GRP: ${pemu.group}\n`;
 	string += `          ID: ${pemu.id}\n`;
 	string += `          TAG: ${pemu.tag}\n`;
 	string += `          ARGS: ${JSON.stringify(pemu.args)}\n`;
