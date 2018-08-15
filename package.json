@@ -30,5 +30,8 @@
 		"eslint-config-airbnb-base": "^13.0.0",
 		"eslint-plugin-es-beautifier": "^1.0.1",
 		"eslint-plugin-import": "^2.13.0"
+	},
+	"dependencies": {
+		"json-socket": "^0.3.0"
 	}
 }

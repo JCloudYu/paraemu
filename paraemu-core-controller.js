@@ -3,13 +3,17 @@
 	
 	
 	
+	const url			 = require( 'url' );
 	const crypto		 = require( 'crypto' );
 	const IS_WIN		 = (require( 'os' ).platform() === "win32");
 	const cluster		 = require( 'cluster' );
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
+	const net			 = require( 'net' );
+	const jsocket		 = require( 'json-socket' );
 	const {EventEmitter} = require( 'events' );
 	
+	const NET_LOC_TEST	 = /^[^:]+(:\d+)?$/;
 	const base32		 = require( './base32' );
 	const GROUP_ID		 = __GEN_RANDOM_ID();
 	
@@ -55,7 +59,6 @@
 				scriptPath, workingDir, workerId, workerTag, workerArgs
 			});
 		});
-		
 		workerInfo.forEach((info)=>{
 			const {scriptPath, workingDir, workerId, workerTag, workerArgs} = info;
 		
@@ -75,6 +78,33 @@
 			worker._tag = workerTag;
 			_workers[ workerId ] = { instantiated:false, available:false, terminated:false, worker };
 		});
+		
+		
+		
+		// Start hosting...
+		if ( options.host && Object(options.host) === options.host) {
+			net.createServer((socket)=>{
+				socket = new jsocket(socket);
+				socket.on( 'message', (message)=>{
+				
+				});
+			})
+			.on( 'error' )
+			.listen(options.port||23400, options.host||'127.0.0.1');
+		}
+		else
+		if ( options.remote ) {
+			const socket = new jsocket(new net.Socket());
+			
+			net.createServer((socket)=>{
+				socket = new jsocket(socket);
+				socket.on( 'message', (message)=>{
+				
+				});
+			})
+			.on( 'error' )
+			.listen(options.port||23400, options.host||'127.0.0.1');
+		}
 	};
 	__EVENT_POOL.emit=(event, ...args)=>{
 		const eventInfo = {
@@ -91,7 +121,6 @@
 			}
 		}
 	};
-	
 	
 	Object.defineProperties(__EVENT_POOL, {
 		groupId: {value:GROUP_ID, configurable:false, writable:false, enumerable:true}
@@ -166,6 +195,10 @@
 	});
 	
 	
+	
+	
+	
+	// Miscellaneous functions
 	function __GEN_RANDOM_ID(length=10) {
 		return base32(crypto.randomBytes(length));
 	}
