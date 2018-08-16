@@ -44,7 +44,7 @@
 		processes.forEach((processInfo)=>{
 			__STATES.noJobs = __STATES.noJobs && false;
 		
-			const {root=null, tag=null, script, args:workerArgs=[]} = processInfo;
+			const {root=null, tag=null, script, args:workerArgs=[], env:workerArgvs=[]} = processInfo;
 			const scriptPath = path.resolve(_descriptorDir, root||'', script);
 			const workingDir = path.resolve(_descriptorDir, root||'');
 			const workerId	 = __GEN_RANDOM_ID();
@@ -52,17 +52,17 @@
 			
 			workerIds.push(workerId);
 			workerInfo.push({
-				scriptPath, workingDir, workerId, workerTag, workerArgs
+				scriptPath, workingDir, workerId, workerTag, workerArgs, workerArgvs
 			});
 		});
 		workerInfo.forEach((info)=>{
-			const {scriptPath, workingDir, workerId, workerTag, workerArgs} = info;
+			const {scriptPath, workingDir, workerId, workerTag, workerArgs, workerArgvs} = info;
 		
 			// Prepare script info
 			cluster.setupMaster({
 				cwd:workingDir,
 				exec:scriptPath,
-				execArgv:[ '--experimental-worker' ]
+				execArgv:workerArgvs
 			});
 			
 			const worker = cluster.fork({
