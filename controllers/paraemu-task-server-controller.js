@@ -4,9 +4,30 @@
 	const net	 = require( 'net' );
 	const j_sock = require( 'json-socket' );
 	
-	module.exports = (options)=>{
+	module.exports = (envInfo)=>{
+		const {hostInfo, event} = envInfo;
 		const conns = {};
-		const GROUP_ID = options.groupId;
+		
+		event.on( '--paraemu-e-network-event', (t_group, msg)=>{
+			const {source:srcSock=null} = msg;
+			
+			if ( !t_group ) {
+				for( let _groupId in conns ) {
+					if ( !conns.hasOwnProperty(_groupId) || srcSock === conns[_groupId] ) {
+						continue;
+					}
+					
+					conns[_groupId].api.sendMessage(msg);
+				}
+				
+				return;
+			}
+			
+			if ( srcSock && srcSock.groupId === t_group ) return;
+			if ( !conns[t_group] ) return;
+			
+			conns[t_group].api.sendMessage(msg);
+		});
 	
 		net.createServer((socket)=>{
 			socket.api = new j_sock(socket);
@@ -22,23 +43,6 @@
 				conns[socket.groupId=info.groupId] = socket;
 				socket.valid = true;
 			})
-			.on( 'paraemu-event', (eventInfo)=>{
-				let [groupId, ] = (eventInfo.target||'').split( '-' );
-				groupId = (groupId === "") ? null : groupId;
-			
-				if ( !groupId || groupId === GROUP_ID ) {
-					console.log("COOL");
-				}
-				
-				
-				for( let _gId in conns ) {
-					if ( !conns.hasOwnProperty(_gId) ) continue;
-					
-					if ( !groupId || _gId === groupId ) {
-						conns[_gId].api.sendMessage(eventInfo);
-					}
-				}
-			})
 			.on( 'message', (message)=>{
 				if ( message.type === "net-group-info" ) {
 					socket.emit( 'group-info', message );
@@ -51,17 +55,24 @@
 				
 				switch( message.type ) {
 					case "paraemu-event":
-						socket.emit( 'paraemu-event', message );
+						message.source = socket;
+						socket.emit( '--paraemu-e-event', message );
 						break;
 					
 					default:
 						break;
 				}
+			})
+			.on( 'close', (hasError)=>{
+				if ( socket.groupId ) {
+					delete conns[socket.groupId];
+					socket.valid = false;
+				}
 			});
 		})
-		.on( 'error', ()=>{
-		
+		.on( 'error', (err)=>{
+			console.log(err);
 		})
-		.listen(options.port||23400, options.host||'127.0.0.1');
+		.listen(hostInfo.port||23400, hostInfo.host||'127.0.0.1');
 	};
 })();

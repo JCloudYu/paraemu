@@ -44,7 +44,7 @@
 		const _config		 = __STATES.currentConf		= JSON.parse(fs.readFileSync(_descriptor, 'utf8'));
 		const _workers		 = __STATES.workers			= {};
 		
-		const {processes} = _config;
+		const {server=null, remote=null, processes=[]} = _config;
 		const workerInfo  = [];
 		const workerIds	  = [];
 		processes.forEach((processInfo)=>{
@@ -85,21 +85,22 @@
 		
 		
 		
-		// Start network connection...
-		const NETInfo = {
-			groupId: GROUP_ID,
-			event:__EVENT_POOL
-		};
+		// region [ Check and start network connection ]
+		let hostInfo = server || options.server;
+		if ( hostInfo && Object(hostInfo) === hostInfo) {
+			require( './paraemu-task-server-controller' )({
+				hostInfo, event:__EVENT_POOL
+			});
+			return;
+		}
 		
-		if ( options.host && Object(options.host) === options.host) {
-			NETInfo.serverInfo = options.host;
-			require( './paraemu-task-server-controller' )(NETInfo);
+		let remoteInfo = remote || options.remote;
+		if ( remoteInfo && Object(remoteInfo) === remoteInfo ) {
+			require( './paraemu-task-client-controller' )({
+				remoteInfo, event:__EVENT_POOL
+			});
 		}
-		else
-		if ( options.remote && Object(options.remote) === options.remote ) {
-			NETInfo.remoteInfo = options.remote;
-			require( './paraemu-task-client-controller' )(NETInfo);
-		}
+		// endregion
 	};
 	__EVENT_POOL.emit=(event, ...args)=>{
 		const eventInfo = {
@@ -172,7 +173,17 @@
 		state.available = false;
 	})
 	.on( 'message', (worker, msg)=>{
-		__ori_emit( '--paraemu-e-message', worker, msg);
+		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
+			__ori_emit( '--paraemu-e-data', worker, msg );
+			return;
+		}
+	
+		
+		msg.sender = [GROUP_ID, worker._id, msg.sender].join('-');
+		msg.sender_tag = msg.sender_tag || worker._tag;
+		msg.target = msg.target ? `${msg.target}` : null;
+		
+		__ori_emit( '--paraemu-e-event', msg);
 	});
 	// endregion
 
@@ -212,28 +223,43 @@
 		};
 		__ori_emit( eventInfo.type, eventInfo );
 	})
-	.on( '--paraemu-e-message', (worker, msg)=>{
-		let msgObj = msg;
-		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
-			msgObj = {type:"paraemu-event", event:'message', args:[msg]};
+	.on( '--paraemu-e-data', (worker, data)=>{
+		let eventInfo = {
+			type: 'worker_data',
+			sender: worker._id,
+			sender_tag: worker._tag
+		};
+		__ori_emit( eventInfo.type, eventInfo, data );
+	})
+	.on( '--paraemu-e-event', (msg)=>{
+		// Parse msg target information
+		let t_group, t_task, t_inst;
+		if ( !msg.target ) {
+			([t_group, t_task, ...t_inst] = [null, null, null]);
+		}
+		else {
+			([t_group=null, t_task=null, ...t_inst] = msg.target.split('-'));
 		}
 		
-		msg.sender = `${GROUP_ID}-${worker._id}`;
-		msg.sender_tag = worker._tag;
 		
-		let target = null;
-		if ( typeof msg.target === "string" ) {
-			let [, taskId] = msg.target.split('-');
-			target = ( taskId.length > 0 ) ? taskId : null;
-		}
 		
-		for ( let _id in __STATES.workers ) {
-			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
-			
-			const workerInfo = __STATES.workers[_id];
-			if ( workerInfo.available && (target === null || target === _id) ) {
-				workerInfo.worker.send(msgObj);
+		// Emit Local Events
+		if ( !t_group || t_group === GROUP_ID ) {
+			for ( let _id in __STATES.workers ) {
+				if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
+				
+				const workerInfo = __STATES.workers[_id];
+				if ( workerInfo.available && (!t_task||t_task === _id) ) {
+					workerInfo.worker.send(msg);
+				}
 			}
+		}
+		
+		
+		
+		// Emit Network Events
+		if ( !t_group || t_group !== GROUP_ID ) {
+			__ori_emit( '--paraemu-e-network-event', t_group, msg );
 		}
 	});
 	// endregion
