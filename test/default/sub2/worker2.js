@@ -1,7 +1,7 @@
 (()=>{
 	'use strict';
 	
-	const pemu = require('../../paraemu');
+	const pemu = require('../../../paraemu');
 	
 	let
 	string  = "[WORKER2] Worker Started\n";
