@@ -28,6 +28,8 @@
         "arrow-body-style": ["error", "always"],
         "object-shorthand": ["error", "methods"],
         "no-param-reassign": ["error", { "props": false }],
+        "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+        "camelcase": ["error", { "ignoreDestructuring": true }],
         "no-trailing-spaces": ["error", { "ignoreComments": true }],
         "no-unused-expressions": ["error", { "allowTernary": true }],
         "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
