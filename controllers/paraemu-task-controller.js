@@ -3,18 +3,14 @@
 	
 	
 	
-	const url			 = require( 'url' );
 	const crypto		 = require( 'crypto' );
 	const IS_WIN		 = (require( 'os' ).platform() === "win32");
 	const cluster		 = require( 'cluster' );
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
-	const net			 = require( 'net' );
-	const jsocket		 = require( 'json-socket' );
 	const {EventEmitter} = require( 'events' );
 	
-	const NET_LOC_TEST	 = /^[^:]+(:\d+)?$/;
-	const base32		 = require( './base32' );
+	const base32		 = obtain( './lib/base32' );
 	const GROUP_ID		 = __GEN_RANDOM_ID();
 	
 	
@@ -81,29 +77,20 @@
 		
 		
 		
-		// Start hosting...
+		// Start network connection...
+		const NETInfo = {
+			options,
+			groupId: GROUP_ID,
+			evt_pool:__EVENT_POOL,
+			core_notify:__ori_emit
+		};
+		
 		if ( options.host && Object(options.host) === options.host) {
-			net.createServer((socket)=>{
-				socket = new jsocket(socket);
-				socket.on( 'message', (message)=>{
-				
-				});
-			})
-			.on( 'error' )
-			.listen(options.port||23400, options.host||'127.0.0.1');
+			require( './paraemu-task-server-controller' )(NETInfo);
 		}
 		else
-		if ( options.remote ) {
-			const socket = new jsocket(new net.Socket());
-			
-			net.createServer((socket)=>{
-				socket = new jsocket(socket);
-				socket.on( 'message', (message)=>{
-				
-				});
-			})
-			.on( 'error' )
-			.listen(options.port||23400, options.host||'127.0.0.1');
+		if ( options.remote && Object(options.remote) === options.remote ) {
+			require( './paraemu-task-client-controller' )(NETInfo);
 		}
 	};
 	__EVENT_POOL.emit=(event, ...args)=>{
@@ -125,6 +112,9 @@
 	Object.defineProperties(__EVENT_POOL, {
 		groupId: {value:GROUP_ID, configurable:false, writable:false, enumerable:true}
 	});
+	
+	
+	
 	
 	
 	
@@ -184,11 +174,17 @@
 		msg.sender = `${GROUP_ID}-${worker._id}`;
 		msg.sender_tag = worker._tag;
 		
+		let target = null;
+		if ( typeof msg.target === "string" ) {
+			let [, taskId] = msg.target.split('-');
+			target = ( taskId.length > 0 ) ? taskId : null;
+		}
+		
 		for ( let _id in __STATES.workers ) {
 			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
 			
 			const workerInfo = __STATES.workers[_id];
-			if ( workerInfo.available ) {
+			if ( workerInfo.available && (target === null || target === _id) ) {
 				workerInfo.worker.send(msgObj);
 			}
 		}

@@ -1,12 +1,14 @@
 (()=>{
 	"use strict";
 	
+	global.obtain = require;
+	
 	// Register core module base on the role of current process
 	if ( require( 'cluster' ).isMaster ) {
-		module.exports = require( './paraemu-core-controller' );
+		module.exports = require( './controllers/paraemu-task-controller' );
 	}
 	else {
-		module.exports = require( './paraemu-core-worker' );
+		module.exports = require( './controllers/paraemu-worker-controller' );
 	}
 	
 	
