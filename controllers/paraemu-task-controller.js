@@ -1,8 +1,6 @@
 (()=>{
 	"use strict";
 	
-	
-	
 	const crypto		 = require( 'crypto' );
 	const IS_WIN		 = (require( 'os' ).platform() === "win32");
 	const cluster		 = require( 'cluster' );
@@ -11,12 +9,17 @@
 	const {EventEmitter} = require( 'events' );
 	
 	const base32		 = obtain( './lib/base32' );
+	const INTERNAL_EVT_CHECK = /^--paraemu-e-.*$/;
+	
+	
+	
+	// region [ Prepare global controlling environment ]
 	const GROUP_ID		 = __GEN_RANDOM_ID();
-	
-	
-	
-	// Global controller
 	const __EVENT_POOL = module.exports = new EventEmitter();
+	Object.defineProperties(__EVENT_POOL, {
+		groupId: {value:GROUP_ID, configurable:false, writable:false, enumerable:true}
+	});
+	
 	const __STATES = {
 		noJobs: true,
 		currentConf: null,
@@ -25,10 +28,10 @@
 		workers: null
 	};
 	const __ori_emit = __EVENT_POOL.emit.bind(__EVENT_POOL);
+	const __ori_off_all = __EVENT_POOL.removeAllListeners.bind(__EVENT_POOL);
+	// endregion
 	
-	
-	
-	
+	// region [ Add and override APIs for developers ]
 	__EVENT_POOL.load=(confPath, options={})=>{
 		if ( !__STATES.noJobs ) {
 			throw new Error( "Existing tasks must be terminated to load new tasks!" );
@@ -84,17 +87,17 @@
 		
 		// Start network connection...
 		const NETInfo = {
-			options,
 			groupId: GROUP_ID,
-			evt_pool:__EVENT_POOL,
-			core_notify:__ori_emit
+			event:__EVENT_POOL
 		};
 		
 		if ( options.host && Object(options.host) === options.host) {
+			NETInfo.serverInfo = options.host;
 			require( './paraemu-task-server-controller' )(NETInfo);
 		}
 		else
 		if ( options.remote && Object(options.remote) === options.remote ) {
+			NETInfo.remoteInfo = options.remote;
 			require( './paraemu-task-client-controller' )(NETInfo);
 		}
 	};
@@ -113,24 +116,21 @@
 			}
 		}
 	};
-	
-	Object.defineProperties(__EVENT_POOL, {
-		groupId: {value:GROUP_ID, configurable:false, writable:false, enumerable:true}
-	});
-	
-	
-	
-	
-	
-	
-	// Handle global events
+	__EVENT_POOL.removeAllListeners=(eventName)=>{
+		if ( INTERNAL_EVT_CHECK.test(eventName) ) { return; }
+		return __ori_off_all(eventName);
+	};
+	// endregion
+
+	// region [ Handle events from workers ]
 	cluster
 	.on( 'online', (worker)=>{
 		const state = __STATES.workers[worker._id];
 		state.instantiated = true;
 		state.available = true;
 		
-		__ori_emit( 'worker-started', {type:'worker-started'}, worker._tag );
+		
+		__ori_emit( '--paraemu-e-worker-started', worker );
 		
 		// Leftover check...
 		let finished = true;
@@ -142,7 +142,7 @@
 		}
 		
 		if ( finished ) {
-			__ori_emit( 'tasks-ready', {type:'tasks-ready'} );
+			__ori_emit( '--paraemu-e-tasks-ready' );
 		}
 	})
 	.on( 'exit', (worker, code, signal)=>{
@@ -150,7 +150,8 @@
 		state.available = false;
 		state.terminated = true;
 		
-		__ori_emit( 'worker-terminated', {type:'worker-terminated'}, worker._tag, code, signal );
+		
+		__ori_emit( '--paraemu-e-worker-terminated', worker, code, signal );
 		
 		// Leftover check...
 		let finished = true;
@@ -163,7 +164,7 @@
 		
 		if ( finished ) {
 			__STATES.noJobs = true;
-			__ori_emit( 'tasks-finished', {type:'tasks-finished'} );
+			__ori_emit( '--paraemu-e-tasks-finished');
 		}
 	})
 	.on( 'disconnected', (worker)=>{
@@ -171,6 +172,47 @@
 		state.available = false;
 	})
 	.on( 'message', (worker, msg)=>{
+		__ori_emit( '--paraemu-e-message', worker, msg);
+	});
+	// endregion
+
+	// region [ Handle core events ]
+	__EVENT_POOL
+	.on( '--paraemu-e-worker-started', (worker)=>{
+		let eventInfo = {
+			type: 'worker-started',
+			sender:worker._id,
+			sender_tag:worker._tag
+		};
+		__ori_emit( eventInfo.type, eventInfo );
+	})
+	.on( '--paraemu-e-worker-terminated', (worker, code, signal)=>{
+		let eventInfo = {
+			type: 'worker-terminated',
+			sender:worker._id,
+			sender_tag:worker._tag
+		};
+		__ori_emit( eventInfo.type, eventInfo, {code, signal} );
+	})
+	.on( '--paraemu-e-tasks-ready', ()=>{
+		let eventInfo = {
+			type: 'tasks-ready'
+		};
+		let workerIds = [];
+		for(let _id in __STATES.workers) {
+			if ( __STATES.workers.hasOwnProperty(_id) ) {
+				workerIds.push(_id);
+			}
+		}
+		__ori_emit( eventInfo.type, eventInfo, workerIds );
+	})
+	.on( '--paraemu-e-tasks-finished', ()=>{
+		let eventInfo = {
+			type: 'tasks-finished'
+		};
+		__ori_emit( eventInfo.type, eventInfo );
+	})
+	.on( '--paraemu-e-message', (worker, msg)=>{
 		let msgObj = msg;
 		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
 			msgObj = {type:"paraemu-event", event:'message', args:[msg]};
@@ -194,13 +236,16 @@
 			}
 		}
 	});
+	// endregion
 	
 	
 	
 	
 	
-	// Miscellaneous functions
+	
+	// region [ Miscellaneous functions ]
 	function __GEN_RANDOM_ID(length=10) {
 		return base32(crypto.randomBytes(length));
 	}
+	// endregion
 })();
