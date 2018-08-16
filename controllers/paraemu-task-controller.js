@@ -60,7 +60,9 @@
 		
 			// Prepare script info
 			cluster.setupMaster({
-				cwd:workingDir, exec:scriptPath
+				cwd:workingDir,
+				exec:scriptPath,
+				execArgv:[ '--experimental-worker' ]
 			});
 			
 			const worker = cluster.fork({
