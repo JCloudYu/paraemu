@@ -4,11 +4,14 @@
         	"tag": "proc1",
         	"root": "./sub1",
             "script": "./worker1.js",
-            "args": [ 1, 2, "string", false ],
-            "env": [ "--experimental-worker" ]
+            "args": [ 1, 2, "string", false ]
         },
         {
-            "script": "./sub2/worker2.js",
+            "script": "./sub2/worker2.js"
+        },
+        {
+            "root": "./sub3",
+            "script": "./worker3.js",
             "env": [ "--experimental-worker" ]
         }
     ]
