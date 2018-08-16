@@ -8,11 +8,38 @@
 		const conns = {};
 		const GROUP_ID = options.groupId;
 	
-	
 		net.createServer((socket)=>{
-			socket = new j_sock(socket);
+			socket.api = new j_sock(socket);
 			socket.valid = false;
-			socket.on( 'message', (message)=>{
+			
+			
+			socket
+			.on( 'close', ()=>{
+				socket.valid = false;
+				delete conns[socket.groupId];
+			})
+			.once( 'group-info', (info)=>{
+				conns[socket.groupId=info.groupId] = socket;
+				socket.valid = true;
+			})
+			.on( 'paraemu-event', (eventInfo)=>{
+				let [groupId, ] = (eventInfo.target||'').split( '-' );
+				groupId = (groupId === "") ? null : groupId;
+			
+				if ( !groupId || groupId === GROUP_ID ) {
+					console.log("COOL");
+				}
+				
+				
+				for( let _gId in conns ) {
+					if ( !conns.hasOwnProperty(_gId) ) continue;
+					
+					if ( !groupId || _gId === groupId ) {
+						conns[_gId].api.sendMessage(eventInfo);
+					}
+				}
+			})
+			.on( 'message', (message)=>{
 				if ( message.type === "net-group-info" ) {
 					socket.emit( 'group-info', message );
 					return;
@@ -30,30 +57,11 @@
 					default:
 						break;
 				}
-			})
-			.once( 'group-info', (info)=>{
-				conns[socket.groupId = info.groupId] = socket;
-				socket.valid = true;
-			})
-			.on( 'paraemu-event', (eventInfo)=>{
-				let [groupId, ] = (eventInfo.target||'').split( '-' );
-				groupId = (groupId === "") ? null : groupId;
-			
-				if ( !groupId || groupId === GROUP_ID ) {
-				
-				}
-				
-				
-				for( let _gId in conns ) {
-					if ( !conns.hasOwnProperty(_gId) ) continue;
-					
-					if ( !groupId || _gId === groupId ) {
-						conns[_gId].sendMessage(eventInfo);
-					}
-				}
 			});
 		})
-		.on( 'error' )
+		.on( 'error', ()=>{
+		
+		})
 		.listen(options.port||23400, options.host||'127.0.0.1');
 	};
 })();

@@ -15,7 +15,7 @@
 	
 	
 	
-	// Overall controller
+	// Global controller
 	const __EVENT_POOL = module.exports = new EventEmitter();
 	const __STATES = {
 		noJobs: true,
@@ -25,6 +25,9 @@
 		workers: null
 	};
 	const __ori_emit = __EVENT_POOL.emit.bind(__EVENT_POOL);
+	
+	
+	
 	
 	__EVENT_POOL.load=(confPath, options={})=>{
 		if ( !__STATES.noJobs ) {

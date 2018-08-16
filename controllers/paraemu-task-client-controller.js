@@ -6,5 +6,10 @@
 	
 	module.exports = (options)=>{
 		const socket = new j_sock(new net.Socket());
+		socket.connect(options.port, options.host)
+		.on( 'connect', ()=>{
+			socket.sendMessage({});
+			
+		});
 	};
 })();
