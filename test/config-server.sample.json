@@ -5,18 +5,12 @@
 	},
     "processes" : [
         {
-        	"tag": "proc1",
-        	"root": "./default/sub1",
-            "script": "./worker1.js",
-            "args": [ 1, 2, "string", false ]
+            "root": "./server/proc1",
+            "script": "./task.js"
         },
         {
-            "script": "./default/sub2/worker2.js"
-        },
-        {
-            "root": "./default/sub3",
-            "script": "./worker3.js",
-            "env": [ "--experimental-worker" ]
+            "root": "./server/proc2",
+            "script": "./task.js"
         }
     ]
 }
