@@ -5,12 +5,10 @@
 	const j_sock = require( 'json-socket' );
 	
 	module.exports = (envInfo)=>{
-		const {hostInfo, event} = envInfo;
+		const {hostInfo, event, internalTrigger} = envInfo;
 		const conns = {};
 		
-		event.on( '--paraemu-e-network-event', (t_group, msg)=>{
-			const {source:srcSock=null} = msg;
-			
+		event.on( '--paraemu-e-network-event', (t_group, msg, srcSock)=>{
 			if ( !t_group ) {
 				for( let _groupId in conns ) {
 					if ( !conns.hasOwnProperty(_groupId) || srcSock === conns[_groupId] ) {
@@ -55,8 +53,7 @@
 				
 				switch( message.type ) {
 					case "paraemu-event":
-						message.source = socket;
-						socket.emit( '--paraemu-e-event', message );
+						internalTrigger( '--paraemu-e-event', message, socket );
 						break;
 					
 					default:

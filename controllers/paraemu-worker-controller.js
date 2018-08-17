@@ -7,13 +7,15 @@
 (()=>{
 	"use strict";
 	
+	const crypto = require( 'crypto' );
+	const base32 = obtain( './lib/base32' );
 	const {EventEmitter} = require( 'events' );
-
 
 	
 	const exports = module.exports = new EventEmitter();
 	const _ori_on = process.on.bind(process);
 	const _ori_emit = exports.emit.bind(exports);
+	const DEFAULT_JOB_ID = __GEN_RANDOM_ID();
 	
 	
 	
@@ -22,14 +24,27 @@
 	Object.defineProperties(exports, {
 		args:{value:_env_conf.args, writable:false, configurable:false, enumerable:true},
 		tag:{value:_env_conf.tag, writable:false, configurable:false, enumerable:true},
-		group:{value:_env_conf.group, writable:false, configurable:false, enumerable:true},
+		groupId:{value:_env_conf.group, writable:false, configurable:false, enumerable:true},
+		jobId:{value:DEFAULT_JOB_ID, configurable:false, writable:false, enumerable:true},
 		id:{value:_env_conf.id, writable:false, configurable:false, enumerable:true},
 		collaborators:{value:_env_conf.worker_list.slice(0), writable:false, configurable:false, enumerable:true}
 	});
 	
 	// Overwrite default event emitter's behavior
+	exports.send = (target, event, ...args)=>{
+		process.send({
+			type:'paraemu-event',
+			sender:DEFAULT_JOB_ID,
+			target:target,
+			event,
+			eventData:args
+		});
+	};
 	exports.emit = (event, ...args)=>{
-		process.send({ type:'paraemu-event', event, args });
+		exports.send( null, event, ...args );
+	};
+	exports.local = (event, ...args)=>{
+		exports.send( exports.groupId, event, ...args );
 	};
 	
 	// Prevent users from listening to message directly
@@ -48,7 +63,17 @@
 			return;
 		}
 		
-		let args = Array.isArray(msg.args) ?  msg.args : [];
-		_ori_emit(msg.event, {type:msg.event, sender_tag:msg.sender_tag, sender:msg.sender}, ...args);
+		let {sender, target, event, eventData} = msg;
+		eventData = Array.isArray(eventData) ?  eventData : [];
+		_ori_emit(event, {type:event, sender, target}, ...eventData);
 	});
+	
+	
+	
+	
+	
+	
+	function __GEN_RANDOM_ID(length=16) {
+		return base32(crypto.randomBytes(length));
+	}
 })();

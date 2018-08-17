@@ -7,7 +7,7 @@
 
 	
 	module.exports = (envInfo)=>{
-		const {remoteInfo, event} = envInfo;
+		const {remoteInfo, event, internalTrigger} = envInfo;
 		const socket = new net.Socket();
 		socket.valid = false;
 		socket.api = new j_sock(socket);
@@ -21,7 +21,7 @@
 		.on( 'message', (message)=>{
 				switch( message.type ) {
 					case "paraemu-event":
-						socket.emit( '--paraemu-e-event', message );
+						internalTrigger( '--paraemu-e-event', message );
 						break;
 					
 					default:

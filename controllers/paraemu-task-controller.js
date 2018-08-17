@@ -38,7 +38,7 @@
 		}
 		
 		
-		const _core_paths	 = (options.search_paths || []).join( IS_WIN ? ';' : ':' );
+		const _core_paths	 = (options.module_paths || []).join( IS_WIN ? ';' : ':' );
 		const _descriptor	 = __STATES.descriptor		= path.resolve(confPath);
 		const _descriptorDir = __STATES.descriptorDir	= path.dirname(_descriptor);
 		const _config		 = __STATES.currentConf		= JSON.parse(fs.readFileSync(_descriptor, 'utf8'));
@@ -89,7 +89,7 @@
 		let hostInfo = server || options.server;
 		if ( hostInfo && Object(hostInfo) === hostInfo) {
 			require( './paraemu-task-server-controller' )({
-				hostInfo, event:__EVENT_POOL
+				hostInfo, event:__EVENT_POOL, internalTrigger:__ori_emit
 			});
 			return;
 		}
@@ -97,31 +97,27 @@
 		let remoteInfo = remote || options.remote;
 		if ( remoteInfo && Object(remoteInfo) === remoteInfo ) {
 			require( './paraemu-task-client-controller' )({
-				remoteInfo, event:__EVENT_POOL
+				remoteInfo, event:__EVENT_POOL, internalTrigger:__ori_emit
 			});
 		}
 		// endregion
 	};
-	__EVENT_POOL.emit=(event, ...args)=>{
+	__EVENT_POOL.send=(target, event, ...args)=>{
 		const eventInfo = {
 			type:'paraemu-event',
-			event:event, args
+			target:target,
+			sender:GROUP_ID,
+			event:event,
+			eventData:args
 		};
 	
-		for ( let _id in __STATES.workers ) {
-			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
-			
-			const workerInfo = __STATES.workers[_id];
-			if ( workerInfo.available ) {
-				workerInfo.worker.send(eventInfo);
-			}
-		}
+		__ori_emit( '--paraemu-e-event', eventInfo )
 	};
-	__EVENT_POOL.sendEvent=(event, ...args)=>{
-	
+	__EVENT_POOL.emit=(event, ...args)=>{
+		__EVENT_POOL.send( null, event, ...args );
 	};
-	__EVENT_POOL.sendEventTo=(target, event, ...args)=>{
-	
+	__EVENT_POOL.local=(event, ...args)=>{
+		__EVENT_POOL.send( GROUP_ID, event, ...args );
 	};
 	__EVENT_POOL.removeAllListeners=(eventName)=>{
 		if ( INTERNAL_EVT_CHECK.test(eventName) ) { return; }
@@ -186,7 +182,6 @@
 	
 		
 		msg.sender = [GROUP_ID, worker._id, msg.sender].join('-');
-		msg.sender_tag = msg.sender_tag || worker._tag;
 		msg.target = msg.target ? `${msg.target}` : null;
 		
 		__ori_emit( '--paraemu-e-event', msg);
@@ -237,16 +232,15 @@
 		};
 		__ori_emit( eventInfo.type, eventInfo, data );
 	})
-	.on( '--paraemu-e-event', (msg)=>{
-		// Parse msg target information
+	.on( '--paraemu-e-event', (eventInfo, source=null)=>{
+		// Parse event target information
 		let t_group, t_task, t_inst;
-		if ( !msg.target ) {
+		if ( !eventInfo.target ) {
 			([t_group, t_task, ...t_inst] = [null, null, null]);
 		}
 		else {
-			([t_group=null, t_task=null, ...t_inst] = msg.target.split('-'));
+			([t_group=null, t_task=null, ...t_inst] = eventInfo.target.split('-'));
 		}
-		
 		
 		
 		// Emit Local Events
@@ -256,7 +250,7 @@
 				
 				const workerInfo = __STATES.workers[_id];
 				if ( workerInfo.available && (!t_task||t_task === _id) ) {
-					workerInfo.worker.send(msg);
+					workerInfo.worker.send(eventInfo);
 				}
 			}
 		}
@@ -265,7 +259,7 @@
 		
 		// Emit Network Events
 		if ( !t_group || t_group !== GROUP_ID ) {
-			__ori_emit( '--paraemu-e-network-event', t_group, msg );
+			__ori_emit( '--paraemu-e-network-event', t_group, eventInfo, source );
 		}
 	});
 	// endregion
