@@ -1,0 +1,14 @@
+{
+	"remote": {
+		"host":"127.0.0.1",
+		"port":23410
+	},
+    "processes" : [
+        {
+        	"tag": "proc1",
+        	"root": "./sub1",
+            "script": "./worker1.js",
+            "args": [ 1, 2, "string", false ]
+        }
+    ]
+}

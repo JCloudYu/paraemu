@@ -117,6 +117,12 @@
 			}
 		}
 	};
+	__EVENT_POOL.sendEvent=(event, ...args)=>{
+	
+	};
+	__EVENT_POOL.sendEventTo=(target, event, ...args)=>{
+	
+	};
 	__EVENT_POOL.removeAllListeners=(eventName)=>{
 		if ( INTERNAL_EVT_CHECK.test(eventName) ) { return; }
 		return __ori_off_all(eventName);

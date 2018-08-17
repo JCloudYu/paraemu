@@ -44,7 +44,7 @@
 				socket.valid = true;
 			})
 			.on( 'message', (message)=>{
-				if ( message.type === "net-group-info" ) {
+				if ( message.type === "paraemu-group-info" ) {
 					socket.emit( 'group-info', message );
 					return;
 				}
