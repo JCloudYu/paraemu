@@ -5,10 +5,12 @@
 	},
     "processes" : [
         {
-        	"tag": "proc1",
-        	"root": "./default/sub1",
-            "script": "./worker1.js",
-            "args": [ 1, 2, "string", false ]
+            "root": "./net/client/proc1",
+            "script": "./task.js"
+        },
+        {
+            "root": "./net/client/proc2",
+            "script": "./task.js"
         }
     ]
 }
