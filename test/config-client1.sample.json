@@ -6,7 +6,7 @@
     "processes" : [
         {
             "root": "./sub3",
-            "script": "./worker3.js",
+            "script": "./default/worker3.js",
             "env": [ "--experimental-worker" ]
         }
     ]

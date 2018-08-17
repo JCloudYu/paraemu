@@ -6,7 +6,7 @@
     "processes" : [
         {
         	"tag": "proc1",
-        	"root": "./sub1",
+        	"root": "./default/sub1",
             "script": "./worker1.js",
             "args": [ 1, 2, "string", false ]
         }
