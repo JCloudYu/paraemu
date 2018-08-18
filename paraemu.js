@@ -9,7 +9,7 @@
 		module.exports = require( './controllers/paraemu-task-controller' );
 	}
 	else {
-		module.exports = require( './controllers/paraemu-worker-controller' );
+		module.exports = require( './controllers/paraemu-task-worker' );
 	}
 	
 	

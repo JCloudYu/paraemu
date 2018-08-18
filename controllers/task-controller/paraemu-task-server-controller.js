@@ -37,20 +37,28 @@
 				socket.valid = false;
 				delete conns[socket.groupId];
 			})
-			.once( 'group-info', (info)=>{
-				conns[socket.groupId=info.groupId] = socket;
-				socket.valid = true;
-			})
 			.on( 'message', (message)=>{
-				if ( message.type === "paraemu-group-info" ) {
-					socket.emit( 'group-info', message );
+				if ( message.type === "paraemu-group-info" && !socket.valid ) {
+					conns[socket.groupId=message.groupId] = socket;
+					socket.valid = true;
+					
+					socket.api.sendMessage({
+						type:'paraemu-group-info',
+						groupId:event.groupId
+					});
+					
+					internalTrigger( '--paraemu-e-event', {
+						type: 'paraemu-event',
+						sender: message.groupId,
+						target: null,
+						event: 'net-group-attach'
+					}, socket);
 					return;
 				}
 			
+			
+				
 				if ( !socket.valid ) return;
-				
-				
-				
 				switch( message.type ) {
 					case "paraemu-event":
 						internalTrigger( '--paraemu-e-event', message, socket );
@@ -64,6 +72,13 @@
 				if ( socket.groupId ) {
 					delete conns[socket.groupId];
 					socket.valid = false;
+					
+					internalTrigger( '--paraemu-e-event', {
+						type: 'paraemu-event',
+						sender: socket.groupId,
+						target: null,
+						event: 'net-group-detach'
+					});
 				}
 			});
 		})

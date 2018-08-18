@@ -1,9 +1,3 @@
-/**
- * Project: 0015.parallel-emulator
- * File: paraemu-core-worker
- * Author: JCloudYu
- * Create Date: Aug. 13, 2018 
- */
 (()=>{
 	"use strict";
 	

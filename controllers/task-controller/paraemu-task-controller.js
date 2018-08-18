@@ -1,3 +1,9 @@
+/**
+ * Project: 0015.parallel-emulator
+ * File: paraemu-core-worker
+ * Author: JCloudYu
+ * Create Date: Aug. 13, 2018
+ */
 (()=>{
 	"use strict";
 	
@@ -17,7 +23,7 @@
 	
 	
 	// region [ Prepare global controlling environment ]
-	const GROUP_ID		 = __GEN_RANDOM_ID();
+	const GROUP_ID = __GEN_RANDOM_ID();
 	const __EVENT_POOL = module.exports = new EventEmitter();
 	Object.defineProperties(__EVENT_POOL, {
 		groupId: {value:GROUP_ID, configurable:false, writable:false, enumerable:true}
