@@ -5,7 +5,7 @@
 	const j_sock = require( 'json-socket' );
 	
 	module.exports = (envInfo)=>{
-		const {hostInfo, event, internalTrigger} = envInfo;
+		const {info:hostInfo, event} = envInfo;
 		const conns = {};
 		
 		event.on( '--paraemu-e-network-event', (t_group, msg, srcSock)=>{
@@ -47,7 +47,7 @@
 						groupId:event.groupId
 					});
 					
-					internalTrigger( '--paraemu-e-event', {
+					event.__emit( '--paraemu-e-event', {
 						type: 'paraemu-event',
 						sender: message.groupId,
 						target: null,
@@ -61,7 +61,7 @@
 				if ( !socket.valid ) return;
 				switch( message.type ) {
 					case "paraemu-event":
-						internalTrigger( '--paraemu-e-event', message, socket );
+						event.__emit( '--paraemu-e-event', message, socket );
 						break;
 					
 					default:
@@ -73,7 +73,7 @@
 					delete conns[socket.groupId];
 					socket.valid = false;
 					
-					internalTrigger( '--paraemu-e-event', {
+					event.__emit( '--paraemu-e-event', {
 						type: 'paraemu-event',
 						sender: socket.groupId,
 						target: null,

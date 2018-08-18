@@ -7,7 +7,7 @@
 
 	
 	module.exports = (envInfo)=>{
-		const {remoteInfo, event, internalTrigger} = envInfo;
+		const {info:remoteInfo, event} = envInfo;
 		const socket = new net.Socket();
 		socket.valid = false;
 		socket.api = new j_sock(socket);
@@ -21,7 +21,7 @@
 			if ( message.type === "paraemu-group-info" && !socket.valid ) {
 				socket.groupId = message.groupId;
 				socket.valid = true;
-				internalTrigger( '--paraemu-e-event', {
+				event.__emit( '--paraemu-e-event', {
 					type: 'paraemu-event',
 					sender: message.groupId,
 					target: event.groupId,
@@ -35,7 +35,7 @@
 			if ( !socket.valid ) return;
 			switch( message.type ) {
 				case "paraemu-event":
-					internalTrigger( '--paraemu-e-event', message );
+					event.__emit( '--paraemu-e-event', message, socket );
 					break;
 				
 				default:
@@ -48,8 +48,8 @@
 		
 		
 		
-		event.on( '--paraemu-e-network-event', (t_group, msg, socket)=>{
-			if ( !socket.valid ) return;
+		event.on( '--paraemu-e-network-event', (t_group, msg, source)=>{
+			if ( !socket.valid || socket === source ) return;
 			
 			socket.api.sendMessage(msg);
 		});
