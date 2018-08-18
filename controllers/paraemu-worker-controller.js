@@ -17,6 +17,9 @@
 	const _ori_emit = exports.emit.bind(exports);
 	const DEFAULT_JOB_ID = __GEN_RANDOM_ID();
 	
+	let __TASK_READY = true;
+	
+	
 	
 	
 	// Prepare environmental arguments
@@ -27,7 +30,8 @@
 		groupId:{value:_env_conf.group, writable:false, configurable:false, enumerable:true},
 		jobId:{value:DEFAULT_JOB_ID, configurable:false, writable:false, enumerable:true},
 		id:{value:_env_conf.id, writable:false, configurable:false, enumerable:true},
-		collaborators:{value:_env_conf.worker_list.slice(0), writable:false, configurable:false, enumerable:true}
+		collaborators:{value:_env_conf.worker_list.slice(0), writable:false, configurable:false, enumerable:true},
+		ready:{set:(val)=>{__TASK_READY = !!val;}, get:()=>{return __TASK_READY;}, configurable:false, enumerable:true}
 	});
 	
 	// Overwrite default event emitter's behavior
@@ -68,6 +72,7 @@
 		_ori_emit(event, {type:event, sender, target}, ...eventData);
 	});
 	
+	__CHECK_READY(true);
 	
 	
 	
@@ -75,5 +80,14 @@
 	
 	function __GEN_RANDOM_ID(length=16) {
 		return base32(crypto.randomBytes(length));
+	}
+	
+	function __CHECK_READY(delay=false) {
+		if ( !delay && __TASK_READY ) {
+			process.send({ type:'worker-ready' });
+			return;
+		}
+		
+		setTimeout(__CHECK_READY, 0);
 	}
 })();

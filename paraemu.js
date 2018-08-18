@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 	
+	require( './lib/unique_timeout' );
 	global.obtain = require;
 	
 	// Register core module base on the role of current process

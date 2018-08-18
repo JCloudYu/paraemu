@@ -11,6 +11,9 @@
 	const base32		 = obtain( './lib/base32' );
 	const INTERNAL_EVT_CHECK = /^--paraemu-e-.*$/;
 	
+	const READY_TIMEOUT = setTimeout.unique();
+	const EXIT_TIMEOUT	= setTimeout.unique();
+	
 	
 	
 	// region [ Prepare global controlling environment ]
@@ -80,7 +83,13 @@
 			
 			worker._id = workerId;
 			worker._tag = workerTag;
-			_workers[ workerId ] = { instantiated:false, available:false, terminated:false, worker };
+			_workers[ workerId ] = {
+				ready_notified:false,
+				instantiated:false,
+				available:false,
+				terminated:false,
+				worker
+			};
 		});
 		
 		
@@ -133,20 +142,9 @@
 		state.available = true;
 		
 		
-		__ori_emit( '--paraemu-e-worker-started', worker );
-		
-		// Leftover check...
-		let finished = true;
-		for ( let _id in __STATES.workers ) {
-			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
-			
-			const workerInfo = __STATES.workers[_id];
-			finished = finished && workerInfo.instantiated;
-		}
-		
-		if ( finished ) {
-			__ori_emit( '--paraemu-e-tasks-ready' );
-		}
+		__ori_emit( '--paraemu-e-state', {
+			type:'worker-started', id:worker._id, tag:worker._tag
+		});
 	})
 	.on( 'exit', (worker, code, signal)=>{
 		const state = __STATES.workers[worker._id];
@@ -154,83 +152,54 @@
 		state.terminated = true;
 		
 		
-		__ori_emit( '--paraemu-e-worker-terminated', worker, code, signal );
+		__ori_emit( '--paraemu-e-state', {
+			type: 'worker-terminated', id:worker._id, tag:worker._tag, code, signal
+		});
 		
-		// Leftover check...
-		let finished = true;
-		for ( let _id in __STATES.workers ) {
-			if ( !__STATES.workers.hasOwnProperty(_id) ) continue;
-			
-			const workerInfo = __STATES.workers[_id];
-			finished = finished && workerInfo.terminated;
+		if ( !state.ready_notified ) {
+			state.ready_notified = true;
+			READY_TIMEOUT(__CHECK_READY_STATE, 0);
 		}
 		
-		if ( finished ) {
-			__STATES.noJobs = true;
-			__ori_emit( '--paraemu-e-tasks-finished');
-		}
+		EXIT_TIMEOUT(__CHECK_TERMINATE_STATE, 0);
 	})
 	.on( 'disconnected', (worker)=>{
 		const state = __STATES.workers[worker._id];
 		state.available = false;
 	})
 	.on( 'message', (worker, msg)=>{
-		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
-			__ori_emit( '--paraemu-e-data', worker, msg );
-			return;
+		if ( Object(msg) !== msg ) {
+			__ori_emit( '--paraemu-e-data', worker, msg ); return;
 		}
-	
 		
-		msg.sender = [GROUP_ID, worker._id, msg.sender].join('-');
-		msg.target = msg.target ? `${msg.target}` : null;
-		
-		__ori_emit( '--paraemu-e-event', msg);
+		switch( msg.type ) {
+			case "paraemu-event":
+				Object.assign(msg, {
+					sender: [GROUP_ID, worker._id, msg.sender].join('-'),
+					target: msg.target ? `${msg.target}` : null
+				});
+				__ori_emit( '--paraemu-e-event', msg);
+				break;
+			
+			case "worker-ready":
+				__STATES.workers[worker._id].ready_notified = true;
+				READY_TIMEOUT(__CHECK_READY_STATE, 0);
+				break;
+				
+			default:
+				__ori_emit( '--paraemu-e-data', worker, msg );
+				break;
+		}
 	});
 	// endregion
 
 	// region [ Handle core events ]
 	__EVENT_POOL
-	.on( '--paraemu-e-worker-started', (worker)=>{
-		let eventInfo = {
-			type: 'worker-started',
-			sender:worker._id,
-			sender_tag:worker._tag
-		};
-		__ori_emit( eventInfo.type, eventInfo );
-	})
-	.on( '--paraemu-e-worker-terminated', (worker, code, signal)=>{
-		let eventInfo = {
-			type: 'worker-terminated',
-			sender:worker._id,
-			sender_tag:worker._tag
-		};
-		__ori_emit( eventInfo.type, eventInfo, {code, signal} );
-	})
-	.on( '--paraemu-e-tasks-ready', ()=>{
-		let eventInfo = {
-			type: 'tasks-ready'
-		};
-		let workerIds = [];
-		for(let _id in __STATES.workers) {
-			if ( __STATES.workers.hasOwnProperty(_id) ) {
-				workerIds.push(_id);
-			}
-		}
-		__ori_emit( eventInfo.type, eventInfo, workerIds );
-	})
-	.on( '--paraemu-e-tasks-finished', ()=>{
-		let eventInfo = {
-			type: 'tasks-finished'
-		};
-		__ori_emit( eventInfo.type, eventInfo );
+	.on( '--paraemu-e-state', (stateInfo)=>{
+		__ori_emit( 'kernel-state', stateInfo );
 	})
 	.on( '--paraemu-e-data', (worker, data)=>{
-		let eventInfo = {
-			type: 'worker_data',
-			sender: worker._id,
-			sender_tag: worker._tag
-		};
-		__ori_emit( eventInfo.type, eventInfo, data );
+		__ori_emit( 'worker-data', { id:worker._id, tag:worker._tag, data });
 	})
 	.on( '--paraemu-e-event', (eventInfo, source=null)=>{
 		// Parse event target information
@@ -270,6 +239,31 @@
 	
 	
 	// region [ Miscellaneous functions ]
+	function __CHECK_READY_STATE() {
+		const workers = __STATES.workers;
+		let ready = true;
+		for( let _id in workers ) {
+			if (!workers.hasOwnProperty(_id)) continue;
+			ready = ready && (workers[_id].ready_notified || workers[_id].terminated);
+		}
+		
+		if ( ready ) {
+			__ori_emit( 'tasks-ready' );
+			__EVENT_POOL.local( 'tasks-ready' );
+		}
+	}
+	function __CHECK_TERMINATE_STATE() {
+		const workers = __STATES.workers;
+		let exit = true;
+		for( let _id in workers ) {
+			if (!workers.hasOwnProperty(_id)) continue;
+			exit = exit && workers[_id].terminated;
+		}
+		
+		if ( exit ) {
+			__ori_emit( 'tasks-finished' );
+		}
+	}
 	function __GEN_RANDOM_ID(length=10) {
 		return base32(crypto.randomBytes(length));
 	}
