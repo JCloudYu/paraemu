@@ -42,7 +42,7 @@
 	
 	pemu.on('event1', (event, ...args)=>{
 		let msg = `[WORKER1] receiving event (${JSON.stringify({event, args})})\n`;
-		if ( event.type !== "event1" || event.sender_tag === "proc1" ) {
+		if ( event.type !== "event1" || args[0] === "proc1" ) {
 			console.log( `${msg}[WORKER1] event test - passed` );
 		}
 		else {
@@ -54,7 +54,7 @@
 		console.log( `[WORKER1] tasks-ready received!`);
 		setTimeout(()=>{
 			console.log( `[WORKER1] sending event1` );
-			pemu.emit('event1', 123, 'abc', [111, 'aaa']);
+			pemu.emit('event1', pemu.tag, 123, 'abc', [111, 'aaa']);
 		}, 2000);
 		
 		setTimeout(()=>{

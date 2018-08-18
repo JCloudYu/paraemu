@@ -44,7 +44,7 @@
 	pemu
 	.on('event1', (event, ...args)=>{
 		let msg = `[WORKER2] receiving event (${JSON.stringify({event, args})})\n`;
-		if ( event.type !== "event1" || event.sender_tag === "proc1" ) {
+		if ( event.type !== "event1" || args[0] === "proc1" ) {
 			console.log( `${msg}[WORKER2] event test - passed` );
 		}
 		else {
