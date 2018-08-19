@@ -43,13 +43,22 @@
 			}
 		})
 		.on( 'close', (hasError)=>{
-			socket.valid = false;
+			if ( socket.groupId ) {
+				socket.valid = false;
+				
+				event.__emit( '--paraemu-e-event', {
+					type: 'paraemu-event',
+					sender: socket.groupId,
+					target: event.groupId,
+					event: 'net-group-detach'
+				});
+			}
 		});
 		
 		
 		
-		event.on( '--paraemu-e-network-event', (t_group, msg, source)=>{
-			if ( !socket.valid || socket === source ) return;
+		event.on( '--paraemu-e-network-event', (t_group, msg, source=null)=>{
+			if ( !socket.valid || !source ) return;
 			
 			socket.api.sendMessage(msg);
 		});
