@@ -2,10 +2,19 @@
 	"use strict";
 	
 	
+	const NET_TIMEOUT = setTimeout.no_repeat();
 	const EXPORTED = module.exports = require( './task-controller/local-task-system' );
 	
 	// Prepare network connections after task workers are ready
 	EXPORTED.on( '--paraemu-e-kernel-online', (config)=>{
+		NET_TIMEOUT(__START_NETWORK_COMMUNICATION.bind(null, config), 5000);
+	});
+	
+	EXPORTED.on( '--paraemu-e-kernel-ready', (config)=>{
+		NET_TIMEOUT(__START_NETWORK_COMMUNICATION.bind(null, config), 0);
+	});
+	
+	function __START_NETWORK_COMMUNICATION(config){
 		let controller = null, info;
 		
 		info = config.server;
@@ -22,5 +31,5 @@
 		if ( controller ) {
 			controller({ info, event:EXPORTED });
 		}
-	});
+	}
 })();

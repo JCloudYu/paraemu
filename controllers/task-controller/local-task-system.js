@@ -109,7 +109,7 @@
 		EXPORTED.__emit( '--paraemu-e-kernel-online', SESSION_INFO.CONFIG );
 	})
 	.on( 'tasks-ready', ()=>{
-		EXPORTED.__emit( 'tasks-ready' );
+		EXPORTED.__emit( '--paraemu-e-kernel-ready', SESSION_INFO.CONFIG );
 		EXPORTED.send(EXPORTED.groupId, 'tasks-ready');
 	})
 	.on( 'tasks-finished', ()=>{
