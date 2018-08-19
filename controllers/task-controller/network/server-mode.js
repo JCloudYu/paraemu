@@ -78,7 +78,7 @@
 						sender: socket.groupId,
 						target: null,
 						event: 'net-group-detach'
-					});
+					}, socket);
 				}
 			});
 		})

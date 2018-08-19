@@ -26,7 +26,7 @@
 					sender: message.groupId,
 					target: event.groupId,
 					event: 'net-group-attach'
-				});
+				}, socket);
 				return;
 			}
 			
@@ -51,14 +51,14 @@
 					sender: socket.groupId,
 					target: event.groupId,
 					event: 'net-group-detach'
-				});
+				}, socket);
 			}
 		});
 		
 		
 		
 		event.on( '--paraemu-e-network-event', (t_group, msg, source=null)=>{
-			if ( !socket.valid || !source ) return;
+			if ( !socket.valid || !!source ) return;
 			
 			socket.api.sendMessage(msg);
 		});
