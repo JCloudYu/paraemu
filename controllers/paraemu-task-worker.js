@@ -23,7 +23,8 @@
 		groupId:{value:_env_conf.group, writable:false, configurable:false, enumerable:true},
 		jobId:{value:DEFAULT_JOB_ID, configurable:false, writable:false, enumerable:true},
 		id:{value:_env_conf.id, writable:false, configurable:false, enumerable:true},
-		ready:{set:(val)=>{__TASK_READY = !!val;}, get:()=>{return __TASK_READY;}, configurable:false, enumerable:true}
+		ready:{set:(val)=>{__TASK_READY = !!val;}, get:()=>{return __TASK_READY;}, configurable:false, enumerable:true},
+		uniqueId:{value:`${_env_conf.group}-${_env_conf.id}-${DEFAULT_JOB_ID}`, configurable:false, enumerable:true, writable:true}
 	});
 	
 	// Overwrite default event emitter's behavior

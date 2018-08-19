@@ -7,12 +7,13 @@
 	string  = "[WORKER2] Worker Started\n";
 	string += `          PID: ${process.pid}\n`;
 	string += `          PPID: ${process.ppid}\n`;
-	string += `          GRP: ${pemu.group}\n`;
+	string += `          UID: ${pemu.uniqueId}\n`;
+	string += `          GRP: ${pemu.groupId}\n`;
 	string += `          ID: ${pemu.id}\n`;
 	string += `          TAG: ${pemu.tag}\n`;
 	string += `          ARGS: ${JSON.stringify(pemu.args)}\n`;
 	string += `          CWD: ${process.cwd()}\n`;
-	string += `          COLL: ${JSON.stringify(pemu.collaborators)}`;
+	
 	console.log(string);
 	
 	
