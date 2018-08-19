@@ -1,6 +1,6 @@
 {
 	"name": "paraemu",
-	"version": "0.9.7",
+	"version": "0.9.8",
 	"description": "An working enviroment that provides a simplified interface for developers who want to fully parallelize node execution",
 	"main": "paraemu.js",
 	"scripts": {
