@@ -7,12 +7,12 @@
         {
             "root": "./content/sub5-net",
             "script": "worker-calculator.js",
-            "env":[ "--experimental-worker" ]
+            "env":[ "--experimental-worker", "--no-warnings" ]
         },
         {
             "root": "./content/sub5-net",
             "script": "worker-calculator.js",
-            "env":[ "--experimental-worker" ]
+            "env":[ "--experimental-worker", "--no-warnings" ]
         }
     ]
 }
