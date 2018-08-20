@@ -3,7 +3,9 @@
 
 	const {workerData:WORKER_DATA, parentPort} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
-	const EXPORTED	= module.exports = JOB_WORKER_CONN(WORKER_DATA.group, WORKER_DATA.task);
+	const EXPORTED	= module.exports = JOB_WORKER_CONN(
+		WORKER_DATA.groupId, WORKER_DATA.taskId, WORKER_DATA.jobId
+	);
 	const JOB_MAP	= { [EXPORTED.id]:EXPORTED };
 	const JOB_LIST	= [ EXPORTED ];
 	

@@ -4,13 +4,13 @@
 	const {EventEmitter} = require('events');
 	const GEN_RANDOM_ID = GenRandomID.bind(null, 16);
 	
-	module.exports = (groupId, taskId)=>{
+	module.exports = (groupId, taskId, jobId=null)=>{
 		const JOB_INST = new EventEmitter();
-		const JOB_ID = GEN_RANDOM_ID();
+		const JOB_ID = jobId||GEN_RANDOM_ID();
 		
 		// Register constants
 		Object.setConstant(JOB_INST, {
-			id:JOB_ID, groupId, taskId,
+			jobId:JOB_ID, groupId, taskId,
 			uniqueId: `${groupId}-${taskId}-${JOB_ID}`
 		});
 		

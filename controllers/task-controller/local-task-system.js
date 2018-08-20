@@ -59,11 +59,11 @@
 			
 		
 			TASK_MANAGER.instantiate({
-				id:workerId,
 				cwd:path.resolve(DEFAULT_DIR, root||''),
 				script:path.resolve(DEFAULT_DIR, root||'', script),
 				module_paths:MODULE_PATH,
-				group:EXPORTED.groupId,
+				taskId:workerId,
+				groupId:EXPORTED.groupId,
 				tag, args, argv
 			});
 		});

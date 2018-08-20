@@ -3,7 +3,7 @@
 
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
-	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.group, EXEC_CONF.id);
+	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);
 	const JOB_MAP	= { [EXPORTED.id]:EXPORTED };
 	const JOB_LIST	= [ EXPORTED ];
 	

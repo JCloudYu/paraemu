@@ -4,8 +4,9 @@
 	const {Worker:Thread} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
-	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.group, EXEC_CONF.id);
+	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);
 	
+	const GEN_RANDOM_ID = GenRandomID.bind(null, 16);
 	const ASYNC_JOB_MAP		= { [EXPORTED.id]:EXPORTED };
 	const ASYNC_JOB_LIST	= [ EXPORTED ];
 	const WORKER_JOB_LIST	= [];
@@ -25,14 +26,20 @@
 		}
 		else {
 			let [scriptPath, options={}] = args;
+			let jobId = GEN_RANDOM_ID();
 			options.workerData = {
 				args: options.workerData,
-				group: EXPORTED.groupId,
-				task: EXPORTED.taskId
+				groupId: EXPORTED.groupId,
+				taskId: EXPORTED.taskId,
+				jobId: jobId
 			};
 			
 			const worker = new Thread(scriptPath, options);
 			WORKER_JOB_LIST.push(worker);
+			
+			Object.setConstant(worker, {
+				groupId:EXPORTED.groupId, taskId:EXPORTED.taskId, jobId
+			});
 			
 			worker
 			.on( 'exit', __WORKER_EXITED)
