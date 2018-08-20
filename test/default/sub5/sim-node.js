@@ -5,6 +5,9 @@
 	const RIDDLE_POOL = {};
 	const RIDDLE_QUEUE = [];
 	let TIMEOUT = null;
+
+	const { id } = pemu.args;
+	console.log(`Worker ${id} start`);
 	
 	pemu.on( 'assign-riddle', (e, key, riddle)=>{
 		RIDDLE_POOL[key] = riddle;

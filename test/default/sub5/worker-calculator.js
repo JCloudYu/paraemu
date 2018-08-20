@@ -23,7 +23,7 @@
 	const SIM_AMOUNT = 10;
 	const WORKERS = [];
 	for( let i=0; i<SIM_AMOUNT; i++ ) {
-		let worker = pemu.job(`${__dirname}/sim-node.js`);
+		let worker = pemu.job(`${__dirname}/sim-node.js`, { workerData: { id: i + 1 } });
 		WORKERS.push(worker);
 	}
 	
