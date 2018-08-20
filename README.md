@@ -13,6 +13,14 @@
     File structure:
     ```javascript
     {
+        "server": undefined | {                    // server config
+            "host": @string,
+            "port": @int
+        },
+        "remote": undefined | {                    // client config
+            "host": @string,
+            "port": @int
+        },
         "processes" : [
             {
                 "tag": undefined | @string,
@@ -28,17 +36,34 @@
 
     * Script execute path is `./${root}/${script}`.
 
-    Example:
+    Server Example:
     ```javascript
-    // ./config.json
+    // ./server-config.json
     {
+        "server": {
+            "host":"127.0.0.1",
+            "port":23410
+        },
         "processes" : [
             {
                 "tag": "proc1",
                 "root": "./default/sub1",
                 "script": "./worker1.js",
                 "args": [ 1, 2, "string", false ]
-            },
+            }
+        ]
+    }
+    ```
+
+    Client Example:
+    ```javascript
+    // ./client-config.json
+    {
+        "remote": {
+            "host":"127.0.0.1",
+            "port":23410
+        },
+        "processes": [
             {
                 "script": "./default/sub2/worker2.js"
             },
@@ -47,7 +72,6 @@
                 "script": "./worker3.js",
                 "env": [ "--experimental-worker" ]
             }
-            ...
         ]
     }
     ```
@@ -56,11 +80,27 @@
 
     Example:
     ```javascript
-    // ./worker1.js
+    // ./main_thread.js
     const pemu = require('paraemu');
+
+    // paraemu default event
+    // tasks-ready: all tasks ready will trigger it
+    pemu.on('tasks-ready', () => {
+        // usage is equal to 'new Worker(filename[, options])' in Worker Threads
+        let worker = pemu.job('./worker.js', { workerData: { msg: 'Hello world!' } });
+    });
+    ```
+
+    ```javascript
+    // ./worker.js
+    const pemu = require('paraemu');
+
     let cb = () => {
-        console.log('Hello world');
+        const { msg } = pemu.args;                           // get workerData
+        console.log(msg);
     };
+
+    // event handler
     pemu.on('register_event_name', cb);                      // register event
     pemu.once('register_once_event_name', cb);               // register event once
     pemu.off('remove_event_name', cb);                       // remove event
