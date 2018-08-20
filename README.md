@@ -108,13 +108,15 @@
     const pemu = require('paraemu');
 
     // event handler
-    pemu.on('register_event_name', cb);                      // register event
-    pemu.once('register_once_event_name', cb);               // register event once
-    pemu.off('remove_event_name', cb);                       // remove event
-    pemu.emit('trigger_event_name', [arg1], [arg2], [...]);  // trigger event
+    pemu.on('register_event_name', cb);                                     // register event
+    pemu.once('register_once_event_name', cb);                              // register event once
+    pemu.off('remove_event_name', cb);                                      // remove event
+    pemu.emit('trigger_event_name', [arg1], [arg2], [...]);                 // trigger event (broadcast)
+    pemu.local('trigger_event_name', [arg1], [arg2], [...]);                // trigger event (local group)
+    pemu.send('target_id', 'trigger_event_name', [arg1], [arg2], [...]);    // trigger event (target group)
 
     // paraemu default event
-    pemu.on('tasks-ready', cb);                              // all scripts are ready
+    pemu.on('tasks-ready', cb);         // all scripts are ready
     ```
 
     (2-1) Worker Threads Example (Main Thread Side):
@@ -131,7 +133,7 @@
     // ./worker.js
     const pemu = require('paraemu');
 
-    const { msg } = pemu.args;                               // get workerData
+    const { msg } = pemu.args;          // get workerData
     console.log(msg);
     ```
 
@@ -140,9 +142,15 @@
     // ./server.js
     const pemu = require('paraemu');
 
-    pemu.on('tasks-ready', cb);                              // all scripts are ready in server side
-    pemu.on('net-group-attach', cb);                         // client connection succeeded
-    pemu.on('net-group-detach', cb);                         // client disconnected
+    const cb = (e) => {
+        console.log(e.sender);
+        console.log(e.target);
+        console.log(e.type);            // event name
+    };
+
+    pemu.on('tasks-ready', cb);         // all scripts are ready in server side
+    pemu.on('net-group-attach', cb);    // client connection succeeded
+    pemu.on('net-group-detach', cb);    // client disconnected
     ```
 
     (3-2) Server Client Example (Client Side):
@@ -150,12 +158,17 @@
     // ./client.js
     const pemu = require('paraemu');
 
-    pemu.on('tasks-ready', cb);                              // all scripts are ready in client side
-    pemu.on('net-group-attach', cb);                         // client connection succeeded
-    pemu.on('net-group-detach', cb);                         // client disconnected
+    const cb = (e) => {
+        console.log(e.sender);
+        console.log(e.target);
+        console.log(e.type);            // event name
+    };
+
+    pemu.on('tasks-ready', cb);         // all scripts are ready in client side
+    pemu.on('net-group-attach', cb);    // client connection succeeded
+    pemu.on('net-group-detach', cb);    // client disconnected
     ```
 
-    * Events will trigger across processes.
     * Please refer to [Event Emitter](https://nodejs.org/api/events.html) for other usages.
 
 3. Run command line:
