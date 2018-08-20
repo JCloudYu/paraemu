@@ -38,7 +38,10 @@
 			WORKER_JOB_LIST.push(worker);
 			
 			Object.setConstant(worker, {
-				groupId:EXPORTED.groupId, taskId:EXPORTED.taskId, jobId
+				groupId:EXPORTED.groupId,
+				taskId:EXPORTED.taskId,
+				jobId,
+				uniqueId: `${EXPORTED.groupId}-${EXPORTED.taskId}-${jobId}`
 			});
 			
 			worker

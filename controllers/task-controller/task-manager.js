@@ -26,23 +26,23 @@
 		
 		},
 		instantiate:(taskInfo)=>{
-			const {group, id, tag, cwd, script, module_paths, args, argv} = taskInfo;
+			const {groupId, taskId, tag, cwd, script, module_paths, args, argv} = taskInfo;
 			
 			cluster.setupMaster({ cwd, exec:script, execArgv:argv });
 			const worker = cluster.fork({
-				paraemu: JSON.stringify({group, id, tag, args}),
+				paraemu: JSON.stringify({groupId, taskId, tag, args}),
 				NODE_PATH:module_paths.join(IS_WIN ? ';' : ':')
 			});
 			
 			
 			
-			worker._group = group;
-			worker._id = id;
+			worker._groupId = groupId;
+			worker._taskId = taskId;
 			worker._tag = tag;
 			
 			
 			
-			WORKER_STATE_LIST.push(WORKER_STATE_MAP[id]={
+			WORKER_STATE_LIST.push(WORKER_STATE_MAP[taskId]={
 				worker,
 				ready_notified:false,
 				instantiated:false,
@@ -52,7 +52,7 @@
 		},
 		sendMessage:(targetId, eventInfo)=>{
 			for( const {available, worker} of WORKER_STATE_LIST ) {
-				if ( available && ( !targetId||targetId===worker._id )) {
+				if ( available && ( !targetId||targetId===worker._taskId )) {
 					worker.send(eventInfo);
 				}
 			}
@@ -63,27 +63,27 @@
 	// region [ Handle events from workers ]
 	cluster
 	.on( 'online', (worker)=> {
-		const state = WORKER_STATE_MAP[worker._id];
+		const state = WORKER_STATE_MAP[worker._taskId];
 		state.instantiated = true;
 		state.available = true;
 		
 		
 		
 		EXPORTED.emit( 'core-state',  {
-			type:'worker-started', id:worker._id, tag:worker._tag
+			type:'worker-started', id:worker._taskId, tag:worker._tag
 		});
 		
 		ONLINE_TIMEOUT(__CHECK_TASK_ONLINE_STATUS, 0);
 	})
 	.on( 'exit', (worker, code, signal)=>{
-		const state = WORKER_STATE_MAP[worker._id];
+		const state = WORKER_STATE_MAP[worker._taskId];
 		state.available = false;
 		state.terminated = true;
 		
 		
 		
 		EXPORTED.emit( 'core-state',  {
-			type: 'worker-terminated', id:worker._id, tag:worker._tag, code, signal
+			type: 'worker-terminated', id:worker._taskId, tag:worker._tag, code, signal
 		});
 		
 		if ( !state.ready_notified ) {
@@ -94,7 +94,7 @@
 		EXIT_TIMEOUT(__CHECK_TERMINATE_STATE, 0);
 	})
 	.on( 'disconnected', (worker)=>{
-		const state = WORKER_STATE_MAP[worker._id];
+		const state = WORKER_STATE_MAP[worker._taskId];
 		state.available = false;
 	})
 	.on( 'message', (worker, msg)=>{
@@ -106,14 +106,14 @@
 		switch( msg.type ) {
 			case "paraemu-event":
 				Object.assign(msg, {
-					sender: [worker._id, msg.sender].join('-'),
+					sender: [worker._taskId, msg.sender].join('-'),
 					target: msg.target ? `${msg.target}` : null
 				});
 				EXPORTED.emit( 'core-event', msg );
 				break;
 			
 			case "worker-ready":
-				WORKER_STATE_MAP[worker._id].ready_notified = true;
+				WORKER_STATE_MAP[worker._taskId].ready_notified = true;
 				READY_TIMEOUT(__CHECK_READY_STATE, 0);
 				break;
 				

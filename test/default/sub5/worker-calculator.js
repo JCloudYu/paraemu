@@ -8,8 +8,9 @@
 	string += `          PID: ${process.pid}\n`;
 	string += `          PPID: ${process.ppid}\n`;
 	string += `          UID: ${pemu.uniqueId}\n`;
-	string += `          GRP: ${pemu.groupId}\n`;
-	string += `          ID: ${pemu.id}\n`;
+	string += `          GID: ${pemu.groupId}\n`;
+	string += `          TID: ${pemu.taskId}\n`;
+	string += `          JID: ${pemu.jobId}\n`;
 	string += `          TAG: ${pemu.tag}\n`;
 	string += `          ARGS: ${JSON.stringify(pemu.args)}\n`;
 	string += `          CWD: ${process.cwd()}\n`;
@@ -20,12 +21,16 @@
 	
 	
 	
+	
+	
 	const SIM_AMOUNT = 10;
-	const WORKERS = [];
+	
+	string = '[WORKER4] Generating thread workers...\n';
 	for( let i=0; i<SIM_AMOUNT; i++ ) {
-		let worker = pemu.job('./sim-node.js', { workerData: { id: i + 1 } });
-		WORKERS.push(worker);
+		let worker = pemu.job('./sim-node.js', { workerData: { serial: i + 1 } });
+		string += `    ${i}: ${worker.uniqueId}\n`;
 	}
+	console.log(string);
 	
 	
 	

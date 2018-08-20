@@ -8,8 +8,9 @@
 	string += `          PID: ${process.pid}\n`;
 	string += `          PPID: ${process.ppid}\n`;
 	string += `          UID: ${pemu.uniqueId}\n`;
-	string += `          GRP: ${pemu.groupId}\n`;
-	string += `          ID: ${pemu.id}\n`;
+	string += `          GID: ${pemu.groupId}\n`;
+	string += `          TID: ${pemu.taskId}\n`;
+	string += `          JID: ${pemu.jobId}\n`;
 	string += `          TAG: ${pemu.tag}\n`;
 	string += `          ARGS: ${JSON.stringify(pemu.args)}\n`;
 	string += `          CWD: ${process.cwd()}\n`;
