@@ -2,8 +2,13 @@
 	"use strict";
 	
 	try {
-		require( 'worker_threads' );
-		module.exports = require( './task-worker/with-threads' );
+		const WorkerThread = require( 'worker_threads' );
+		if ( WorkerThread.isMainThread ) {
+			module.exports = require( './task-worker/master-thread' );
+		}
+		else {
+			module.exports = require( './task-worker/worker-thread' )
+		}
 	}
 	catch (e) {
 		module.exports = require( './task-worker/no-threads' );
