@@ -30,13 +30,17 @@
 				group: EXPORTED.groupId,
 				task: EXPORTED.taskId
 			};
+			
 			const worker = new Thread(scriptPath, options);
-			worker.on( 'message', (msg)=>{
+			WORKER_JOB_LIST.push(worker);
+			
+			worker
+			.on( 'exit', __WORKER_EXITED)
+			.on( 'message', (msg)=>{
 				if ( Object(msg) === msg && msg.type === "paraemu-event" ) {
 					__RECEIVING_EVENT(msg);
 				}
 			});
-			
 			return worker;
 		}
 	};
@@ -113,5 +117,11 @@
 	
 	function __RECEIVING_EVENT(eventInfo){
 		process.send(eventInfo);
+	}
+	function __WORKER_EXITED(worker){
+		let idx = WORKER_JOB_LIST.indexOf(worker);
+		if ( idx >= 0 ) {
+			WORKER_JOB_LIST.splice(idx,1);
+		}
 	}
 })();

@@ -7,8 +7,6 @@
 	const JOB_MAP	= { [EXPORTED.id]:EXPORTED };
 	const JOB_LIST	= [ EXPORTED ];
 	
-	
-	
 	// region [ Add execution constants and other apis ]
 	Object.setConstant(EXPORTED, {
 		args:WORKER_DATA.args
@@ -69,6 +67,6 @@
 	
 	
 	function __RECEIVE_EVENT(eventInfo){
-		parentPort.send(eventInfo);
+		parentPort.postMessage(eventInfo);
 	}
 })();

@@ -1,0 +1,14 @@
+{
+    "processes" : [
+        {
+        	"tag": "calculator",
+        	"root": "./default/sub5",
+            "script": "./worker-calculator.js",
+            "env": [ "--experimental-worker" ]
+        },
+        {
+        	"tag":"riddle-provider",
+            "script": "./default/sub5/worker-global.js"
+        }
+    ]
+}
