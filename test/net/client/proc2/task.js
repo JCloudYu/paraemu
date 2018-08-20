@@ -4,7 +4,7 @@
 	const pemu = require( '../../../../paraemu' );
 	
 	pemu
-	.on( 'net-group-attach', (e, issueId)=>{
+	.on( 'net-group-attach', (e)=>{
 		let
 		logMsg  = `[CLIENT PROC2] net-group-attach event\n`;
 		logMsg += `    UID: ${pemu.uniqueId}\n`;
