@@ -13,11 +13,11 @@
     File structure:
     ```javascript
     {
-        "server": undefined | {                    // server config
+        "server": undefined | {                     // server config
             "host": @string,
             "port": @int
         },
-        "remote": undefined | {                    // client config
+        "remote": undefined | {                     // client config
             "host": @string,
             "port": @int
         },
@@ -36,34 +36,17 @@
 
     * Script execute path is `./${root}/${script}`.
 
-    Server Example:
+    Basic Example:
     ```javascript
-    // ./server-config.json
+    // ./test/config.sample.json
     {
-        "server": {
-            "host":"127.0.0.1",
-            "port":23410
-        },
         "processes" : [
             {
                 "tag": "proc1",
                 "root": "./default/sub1",
                 "script": "./worker1.js",
                 "args": [ 1, 2, "string", false ]
-            }
-        ]
-    }
-    ```
-
-    Client Example:
-    ```javascript
-    // ./client-config.json
-    {
-        "remote": {
-            "host":"127.0.0.1",
-            "port":23410
-        },
-        "processes": [
+            },
             {
                 "script": "./default/sub2/worker2.js"
             },
@@ -76,35 +59,100 @@
     }
     ```
 
-2. Write script file:
-
-    Example:
+    Server Example:
     ```javascript
-    // ./main_thread.js
-    const pemu = require('paraemu');
-
-    // paraemu default event
-    // tasks-ready: all tasks ready will trigger it
-    pemu.on('tasks-ready', () => {
-        // usage is equal to 'new Worker(filename[, options])' in Worker Threads
-        let worker = pemu.job('./worker.js', { workerData: { msg: 'Hello world!' } });
-    });
+    // ./test/config-server.sample.json
+    {
+        "server": {
+            "host":"127.0.0.1",
+            "port":23410
+        },
+        "processes" : [
+            {
+                "root": "./net/server/proc1",
+                "script": "./task.js"
+            },
+            {
+                "root": "./net/server/proc2",
+                "script": "./task.js"
+            }
+        ]
+    }
     ```
 
+    Client Example:
     ```javascript
-    // ./worker.js
-    const pemu = require('paraemu');
+    // ./test/config-client2.sample.json
+    {
+        "remote": {
+            "host":"127.0.0.1",
+            "port":23410
+        },
+        "processes" : [
+            {
+                "root": "./net/client/proc1",
+                "script": "./task.js"
+            },
+            {
+                "root": "./net/client/proc2",
+                "script": "./task.js"
+            }
+        ]
+    }
+    ```
 
-    let cb = () => {
-        const { msg } = pemu.args;                           // get workerData
-        console.log(msg);
-    };
+2. Write script file:
+
+    (1) Basic Example:
+    ```javascript
+    const pemu = require('paraemu');
 
     // event handler
     pemu.on('register_event_name', cb);                      // register event
     pemu.once('register_once_event_name', cb);               // register event once
     pemu.off('remove_event_name', cb);                       // remove event
     pemu.emit('trigger_event_name', [arg1], [arg2], [...]);  // trigger event
+
+    // paraemu default event
+    pemu.on('tasks-ready', cb);                              // all scripts are ready
+    ```
+
+    (2-1) Worker Threads Example (Main Thread Side):
+    ```javascript
+    // ./main_thread.js
+    const pemu = require('paraemu');
+
+    // usage is equal to 'new Worker(filename[, options])' in Worker Threads
+    let worker = pemu.job('./worker.js', { workerData: { msg: 'Hello world!' } });
+    ```
+
+    (2-2) Worker Threads Example (Worker Side):
+    ```javascript
+    // ./worker.js
+    const pemu = require('paraemu');
+
+    const { msg } = pemu.args;                               // get workerData
+    console.log(msg);
+    ```
+
+    (3-1) Server Client Example (Server Side):
+    ```javascript
+    // ./server.js
+    const pemu = require('paraemu');
+
+    pemu.on('tasks-ready', cb);                              // all scripts are ready in server side
+    pemu.on('net-group-attach', cb);                         // client connection succeeded
+    pemu.on('net-group-detach', cb);                         // client disconnected
+    ```
+
+    (3-2) Server Client Example (Client Side):
+    ```javascript
+    // ./client.js
+    const pemu = require('paraemu');
+
+    pemu.on('tasks-ready', cb);                              // all scripts are ready in client side
+    pemu.on('net-group-attach', cb);                         // client connection succeeded
+    pemu.on('net-group-detach', cb);                         // client disconnected
     ```
 
     * Events will trigger across processes.
