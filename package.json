@@ -5,6 +5,7 @@
 	"main": "paraemu.js",
 	"scripts": {
 		"test": "node ./paraemu-cli.js ./test/config.sample.json",
+		"test-async": "node ./paraemu-cli.js ./test/config.no-thread.json",
 		"test-server": "node ./paraemu-cli.js ./test/config-server.sample.json",
 		"test-client1": "node ./paraemu-cli.js ./test/config-client1.sample.json",
 		"test-client2": "node ./paraemu-cli.js ./test/config-client2.sample.json",
