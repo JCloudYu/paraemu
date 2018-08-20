@@ -5,24 +5,25 @@
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.group, EXEC_CONF.id);
-	const JOB_MAP	= { [EXPORTED.id]:EXPORTED };
-	const JOB_LIST	= [ EXPORTED ];
+	
+	const ASYNC_JOB_MAP		= { [EXPORTED.id]:EXPORTED };
+	const ASYNC_JOB_LIST	= [ EXPORTED ];
+	const WORKER_JOB_LIST	= [];
 	
 	
 	
 	// region [ Add execution constants and other apis ]
-	Object.setConstant(EXPORTED, {
-		tag:EXEC_CONF.tag,
-		args:EXEC_CONF.args
-	});
+	Object.setConstant(EXPORTED, { tag:EXEC_CONF.tag, args:EXEC_CONF.args });
 	EXPORTED.job=(...args)=>{
-		const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
-		JOB_MAP[ JOB_CONN.id ] = JOB_CONN;
-		JOB_LIST.push(JOB_CONN);
-		
-		JOB_CONN.on( '--paraemu-e-event', __RECEIVING_EVENT);
-		
-		if ( args.length > 0 ) {
+		if ( args.length === 0 ) {
+			const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
+			ASYNC_JOB_MAP[ JOB_CONN.id ] = JOB_CONN;
+			ASYNC_JOB_LIST.push(JOB_CONN);
+			
+			JOB_CONN.on( '--paraemu-e-event', __RECEIVING_EVENT);
+			return JOB_CONN;
+		}
+		else {
 			let [scriptPath, options={}] = args;
 			options.workerData = {
 				args: options.workerData,
@@ -30,12 +31,14 @@
 				task: EXPORTED.taskId
 			};
 			const worker = new Thread(scriptPath, options);
-			JOB_CONN.worker = worker;
 			worker.on( 'message', (msg)=>{
-			
+				if ( Object(msg) === msg && msg.type === "paraemu-event" ) {
+					__RECEIVING_EVENT(msg);
+				}
 			});
+			
+			return worker;
 		}
-		return JOB_CONN;
 	};
 	// endregion
 	
@@ -61,20 +64,27 @@
 			return;
 		}
 		
+		// Send to all emitters
 		let {sender, target, event, eventData} = msg;
 		eventData = Array.isArray(eventData) ?  eventData : [];
 		let [,, t_job=null] = target ? target.split('-') : [null, null, null];
 		
 		if ( !t_job ) {
-			for( let _job of JOB_LIST ) {
+			for( let _job of ASYNC_JOB_LIST ) {
 				_job.__emit(event, {type:event, sender, target}, ...eventData)
 			}
 		}
 		else {
-			let _job = JOB_MAP[t_job];
+			let _job = ASYNC_JOB_MAP[t_job];
 			if ( _job ) {
 				_job.__emit(event, {type:event, sender, target}, ...eventData)
 			}
+		}
+		
+		
+		// Send to all child workers
+		for( let _worker of WORKER_JOB_LIST ) {
+			_worker.postMessage(msg);
 		}
 	});
 	// endregion
