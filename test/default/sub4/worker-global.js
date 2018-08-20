@@ -49,7 +49,7 @@
 		riddle.answer = result;
 		riddle.solvedTime = (new Date()).getTime();
 		
-		console.log( `${SOLVED_RIDDLES_COUNT}: ${riddle.solver} has solved the answer` );
+		console.log( `${SOLVED_RIDDLES_COUNT}: ${riddle.solver} has solved the riddle!` );
 		
 		
 		
