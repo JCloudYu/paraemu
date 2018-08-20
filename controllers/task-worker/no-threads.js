@@ -19,7 +19,7 @@
 		JOB_MAP[ JOB_CONN.id ] = JOB_CONN;
 		JOB_LIST.push(JOB_CONN);
 		
-		JOB_CONN.on( '--paraemu-e-event', (eventInfo)=>{ process.send(eventInfo); });
+		JOB_CONN.on( '--paraemu-e-event', __RECEIVING_EVENT);
 		return JOB_CONN;
 	};
 	// endregion
@@ -39,9 +39,7 @@
 	// endregion
 	
 	// region [ Handle core events ]
-	EXPORTED.on( '--paraemu-e-event', (eventInfo)=>{
-		process.send(eventInfo);
-	});
+	EXPORTED.on( '--paraemu-e-event', __RECEIVING_EVENT);
 	process.__on( 'message', (msg)=>{
 		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
 			EXPORTED.__emit( 'message', {type:'message'}, msg );
@@ -82,4 +80,13 @@
 	});
 	__CHECK_READY(true);
 	// endregion
+	
+	
+	
+	
+	
+	
+	function __RECEIVING_EVENT(eventInfo){
+		process.send(eventInfo);
+	}
 })();
