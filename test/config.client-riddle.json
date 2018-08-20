@@ -1,0 +1,18 @@
+{
+	"remote": {
+		"host":"127.0.0.1",
+		"port":23410
+	},
+    "processes" : [
+        {
+            "root": "./content/sub5-net",
+            "script": "worker-calculator.js",
+            "env":[ "--experimental-worker" ]
+        },
+        {
+            "root": "./content/sub5-net",
+            "script": "worker-calculator.js",
+            "env":[ "--experimental-worker" ]
+        }
+    ]
+}

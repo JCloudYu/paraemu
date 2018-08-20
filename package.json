@@ -10,6 +10,8 @@
 		"test-server": "node ./paraemu-cli.js ./test/config.server.json",
 		"test-client1": "node ./paraemu-cli.js ./test/config.client1.json",
 		"test-client2": "node ./paraemu-cli.js ./test/config.client2.json",
+		"test-server-riddle": "node ./paraemu-cli.js ./test/config.server-riddle.json",
+		"test-client-riddle": "node ./paraemu-cli.js ./test/config.client-riddle.json",
 		"beautify": "eslint --fix *.js ./"
 	},
 	"repository": {
