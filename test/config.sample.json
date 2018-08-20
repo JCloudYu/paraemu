@@ -2,15 +2,15 @@
     "processes" : [
         {
         	"tag": "proc1",
-        	"root": "./default/sub1",
+        	"root": "./content/sub1",
             "script": "./worker1.js",
             "args": [ 1, 2, "string", false ]
         },
         {
-            "script": "./default/sub2/worker2.js"
+            "script": "./content/sub2/worker2.js"
         },
         {
-            "root": "./default/sub3",
+            "root": "./content/sub3",
             "script": "./worker3.js",
             "env": [ "--experimental-worker" ]
         }

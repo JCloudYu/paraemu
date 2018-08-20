@@ -5,11 +5,11 @@
 	},
     "processes" : [
         {
-            "root": "./net/client/proc2",
+            "root": "./content/client/proc2",
             "script": "./task.js"
         },
         {
-            "root": "./net/client/proc2",
+            "root": "./content/client/proc2",
             "script": "./task.js"
         }
     ]
