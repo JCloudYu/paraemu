@@ -64,8 +64,8 @@
     // ./test/config.server.json
     {
         "server": {
-            "host":"127.0.0.1",
-            "port":23410
+            "host": "127.0.0.1",
+            "port": 23410
         },
         "processes" : [
             {
@@ -85,8 +85,8 @@
     // ./test/content/config.client2.json
     {
         "remote": {
-            "host":"127.0.0.1",
-            "port":23410
+            "host": "127.0.0.1",
+            "port": 23410
         },
         "processes" : [
             {
@@ -176,9 +176,9 @@
 
 ### Noun Definition ###
 
-* Group: total workspace in config
-* Task: each child process in config
-* Job: detailed work in each child process
+* Group: Total workspace in config.
+* Task: Each child process in config.
+* Job: Detailed work in each child process.
 
 ---
 
