@@ -43,7 +43,7 @@
         "processes" : [
             {
                 "tag": "proc1",
-                "root": "./default/sub1",
+                "root": "./content/sub1",
                 "script": "./worker1.js",
                 "args": [ 1, 2, "string", false ]
             },
@@ -51,7 +51,7 @@
                 "script": "./default/sub2/worker2.js"
             },
             {
-                "root": "./default/sub3",
+                "root": "./content/sub3",
                 "script": "./worker3.js",
                 "env": [ "--experimental-worker" ]
             }
@@ -61,7 +61,7 @@
 
     Server Example:
     ```javascript
-    // ./test/config-server.sample.json
+    // ./test/config.server.json
     {
         "server": {
             "host":"127.0.0.1",
@@ -69,11 +69,11 @@
         },
         "processes" : [
             {
-                "root": "./net/server/proc1",
+                "root": "./content/server/proc1",
                 "script": "./task.js"
             },
             {
-                "root": "./net/server/proc2",
+                "root": "./content/server/proc2",
                 "script": "./task.js"
             }
         ]
@@ -82,7 +82,7 @@
 
     Client Example:
     ```javascript
-    // ./test/config-client2.sample.json
+    // ./test/content/config.client2.json
     {
         "remote": {
             "host":"127.0.0.1",
@@ -90,11 +90,11 @@
         },
         "processes" : [
             {
-                "root": "./net/client/proc1",
+                "root": "./content/client/proc1",
                 "script": "./task.js"
             },
             {
-                "root": "./net/client/proc2",
+                "root": "./content/client/proc2",
                 "script": "./task.js"
             }
         ]
@@ -173,6 +173,12 @@
 
 3. Run command line:
     > paraemu ./config.json
+
+### Noun Definition ###
+
+* Group: total workspace in config
+* Task: each child process in config
+* Job: detailed work in each child process
 
 ---
 
