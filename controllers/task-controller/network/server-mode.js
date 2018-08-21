@@ -89,6 +89,13 @@
 		.on( 'error', (err)=>{
 			console.log(err);
 		})
-		.listen(hostInfo.port||23400, hostInfo.host||'127.0.0.1');
+		.listen(hostInfo.port||23400, hostInfo.host||'127.0.0.1', (e)=>{
+			event.__emit( '--paraemu-e-event', {
+				type: 'paraemu-event',
+				sender: event.groupId,
+				target: event.groupId,
+				event: 'net-connection-ready'
+			});
+		});
 	};
 })();

@@ -4,7 +4,7 @@
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);
-	const JOB_MAP	= { [EXPORTED.id]:EXPORTED };
+	const JOB_MAP	= { [EXPORTED.jobId]:EXPORTED };
 	const JOB_LIST	= [ EXPORTED ];
 	
 	
@@ -16,7 +16,7 @@
 	});
 	EXPORTED.job=()=>{
 		const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
-		JOB_MAP[ JOB_CONN.id ] = JOB_CONN;
+		JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 		JOB_LIST.push(JOB_CONN);
 		
 		JOB_CONN.on( '--paraemu-e-event', __RECEIVING_EVENT);

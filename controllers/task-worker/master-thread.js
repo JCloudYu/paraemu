@@ -7,7 +7,7 @@
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);
 	
 	const GEN_RANDOM_ID = GenRandomID.bind(null, 16);
-	const ASYNC_JOB_MAP		= { [EXPORTED.id]:EXPORTED };
+	const ASYNC_JOB_MAP		= { [EXPORTED.jobId]:EXPORTED };
 	const ASYNC_JOB_LIST	= [ EXPORTED ];
 	const WORKER_JOB_LIST	= [];
 	
@@ -18,7 +18,7 @@
 	EXPORTED.job=(...args)=>{
 		if ( args.length === 0 ) {
 			const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
-			ASYNC_JOB_MAP[ JOB_CONN.id ] = JOB_CONN;
+			ASYNC_JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 			ASYNC_JOB_LIST.push(JOB_CONN);
 			
 			JOB_CONN.on( '--paraemu-e-event', __RECEIVING_EVENT);
