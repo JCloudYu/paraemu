@@ -2,6 +2,7 @@
 	'use strict';
 	
 	const pemu = require('../../../paraemu');
+	const RIDDLE_TIMEOUT = setTimeout.no_repeat();
 	
 	let
 	string  = "[WORKER4] Worker Started\n";
@@ -33,15 +34,15 @@
 		pemu.emit( 'assign-riddle', key, riddle );
 		
 		if ( RIDDLE_COUNT <= TOTAL_RIDDLES ) {
-			setTimeout(GEN_RIDDLE, 500);
+			RIDDLE_TIMEOUT(GEN_RIDDLE, 500);
 		}
 	};
 	
 	pemu
 	.on( 'tasks-ready', ()=>{})
 	.on( 'net-group-attach', (e)=>{
-		console.log( `GROUP ${e.sender} has joined! Start generating riddle!` );
-		setTimeout(GEN_RIDDLE, 5000);
+		console.log( `GROUP ${e.sender} has joined! If there's no more groups, riddle will be generated in 5 seconds...` );
+		RIDDLE_TIMEOUT(GEN_RIDDLE, 5000);
 	})
 	.on( 'riddle-solved', (e, key, result)=>{
 		let riddle = RIDDLE_MAP[key];
