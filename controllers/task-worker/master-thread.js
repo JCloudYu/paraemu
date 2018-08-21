@@ -98,7 +98,7 @@
 		
 		// Send to all child workers
 		for( let _worker of WORKER_JOB_LIST ) {
-			_worker.postMessage(msg);
+			try { _worker.postMessage(msg); } catch(e) {}
 		}
 	});
 	// endregion
