@@ -33,9 +33,12 @@
 			
 			
 			socket
-			.on( 'close', ()=>{
-				socket.valid = false;
-				delete conns[socket.groupId];
+			.on( 'error', ()=>{
+				try {
+					socket.valid = false;
+					socket.close();
+				}
+				catch(e) {}
 			})
 			.on( 'message', (message)=>{
 				if ( message.type === "paraemu-group-info" && !socket.valid ) {
@@ -69,9 +72,10 @@
 				}
 			})
 			.on( 'close', (hasError)=>{
+				socket.valid = false;
+			
 				if ( socket.groupId ) {
 					delete conns[socket.groupId];
-					socket.valid = false;
 					
 					event.__emit( '--paraemu-e-event', {
 						type: 'paraemu-event',

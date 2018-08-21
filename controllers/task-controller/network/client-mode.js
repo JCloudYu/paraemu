@@ -42,10 +42,13 @@
 					break;
 			}
 		})
+		.on( 'error', ()=>{
+			socket.valid = false;
+			socket.close();
+		})
 		.on( 'close', (hasError)=>{
+			socket.valid = false;
 			if ( socket.groupId ) {
-				socket.valid = false;
-				
 				event.__emit( '--paraemu-e-event', {
 					type: 'paraemu-event',
 					sender: socket.groupId,
