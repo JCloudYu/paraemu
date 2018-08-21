@@ -21,12 +21,16 @@
 			if ( message.type === "paraemu-group-info" && !socket.valid ) {
 				socket.groupId = message.groupId;
 				socket.valid = true;
+				
 				event.__emit( '--paraemu-e-event', {
 					type: 'paraemu-event',
-					sender: message.groupId,
+					sender: event.groupId,
 					target: event.groupId,
-					event: 'net-group-attach'
-				}, socket);
+					event: 'net-connection-ready',
+					eventData: [{
+						groupId:message.groupId
+					}]
+				});
 				return;
 			}
 			
@@ -51,10 +55,13 @@
 			if ( socket.groupId ) {
 				event.__emit( '--paraemu-e-event', {
 					type: 'paraemu-event',
-					sender: socket.groupId,
+					sender: event.groupId,
 					target: event.groupId,
-					event: 'net-group-detach'
-				}, socket);
+					event: 'net-connection-removed',
+					eventData: [{
+						groupId:socket.groupId
+					}]
+				});
 			}
 		});
 		
