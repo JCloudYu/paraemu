@@ -46,9 +46,15 @@
 					break;
 			}
 		})
-		.on( 'error', ()=>{
+		.on( 'error', (err)=>{
 			socket.valid = false;
-			socket.close();
+			event.__emit( '--paraemu-e-event', {
+				type: 'paraemu-event',
+				sender: event.groupId,
+				target: event.groupId,
+				event: 'net-connection-error',
+				eventData: err
+			});
 		})
 		.on( 'close', (hasError)=>{
 			socket.valid = false;

@@ -34,11 +34,7 @@
 			
 			socket
 			.on( 'error', ()=>{
-				try {
-					socket.valid = false;
-					socket.close();
-				}
-				catch(e) {}
+				try { socket.valid = false; } catch(e) {}
 			})
 			.on( 'message', (message)=>{
 				if ( message.type === "paraemu-group-info" && !socket.valid ) {
@@ -87,7 +83,13 @@
 			});
 		})
 		.on( 'error', (err)=>{
-			console.log(err);
+			event.__emit( '--paraemu-e-event', {
+				type: 'paraemu-event',
+				sender: event.groupId,
+				target: event.groupId,
+				event: 'net-connection-error',
+				eventData: err
+			});
 		})
 		.listen(hostInfo.port||23400, hostInfo.host||'127.0.0.1', (e)=>{
 			event.__emit( '--paraemu-e-event', {
