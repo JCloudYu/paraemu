@@ -3,11 +3,13 @@
         {
         	"tag": "calculator",
         	"root": "./content/sub4",
-            "script": "./worker-calculator.js"
+            "script": "./worker-calculator.js",
+            "env": [ "--inspect" ]
         },
         {
         	"tag":"riddle-provider",
-            "script": "./content/sub4/worker-global.js"
+            "script": "./content/sub4/worker-global.js",
+            "env": [ "--inspect" ]
         }
     ]
 }
