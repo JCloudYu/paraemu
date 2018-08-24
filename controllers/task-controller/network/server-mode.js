@@ -88,7 +88,7 @@
 				sender: event.groupId,
 				target: event.groupId,
 				event: 'net-connection-error',
-				eventData: err
+				eventData: [ err ]
 			});
 		})
 		.listen(hostInfo.port||23400, hostInfo.host||'127.0.0.1', (e)=>{

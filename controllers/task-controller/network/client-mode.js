@@ -53,7 +53,7 @@
 				sender: event.groupId,
 				target: event.groupId,
 				event: 'net-connection-error',
-				eventData: err
+				eventData: [ err ]
 			});
 		})
 		.on( 'close', (hasError)=>{
