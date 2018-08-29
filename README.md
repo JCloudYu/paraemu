@@ -152,7 +152,7 @@
 
     // "...args" is "rest parameter"
     const callback = (e, ...args) => {
-        console.log(e.sender);
+        console.log(e.sender);              // sender info
         console.log(e.target);
         console.log(e.type);                // event name
         console.log(args);
@@ -173,7 +173,7 @@
 
     // "...args" is "rest parameter"
     const callback = (e, ...args) => {
-        console.log(e.sender);
+        console.log(e.sender);              // sender info
         console.log(e.target);
         console.log(e.type);                // event name
         console.log(args);
