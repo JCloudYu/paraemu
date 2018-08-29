@@ -161,8 +161,9 @@
     pemu.on('tasks-ready', callback);               // all scripts are ready in server side
     pemu.on('net-group-attach', callback);          // anyone of clients connected successfully
     pemu.on('net-group-detach', callback);          // anyone of clients disconnected
-    pemu.on('net-connection-ready', callback);      // your client connected successfully
-    pemu.on('net-connection-removed', callback);    // your client disconnected
+    pemu.on('net-connection-ready', callback);      // anyone of clients connected successfully
+    pemu.on('net-connection-removed', callback);    // anyone of clients disconnected
+    pemu.on('net-connection-error', callback);      // anyone of clients has gone wrong
     ```
 
     (3-2) Server Client Example (Client Side):
