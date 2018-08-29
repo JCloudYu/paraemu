@@ -183,6 +183,7 @@
     pemu.on('net-group-detach', callback);          // anyone of clients disconnected
     pemu.on('net-connection-ready', callback);      // your client connected successfully
     pemu.on('net-connection-removed', callback);    // your client disconnected
+    pemu.on('net-connection-error', callback);      // your client has gone wrong
     ```
 
     * Please refer to [Event Emitter](https://nodejs.org/api/events.html) for other usages.
@@ -190,14 +191,28 @@
 3. Run command line:
     > paraemu ./config.json
 
-4. Debug use Chrome DevTools:  
+4. Debug task use Chrome DevTools (Optional):  
     (1) Add "--inspect-brk" in "env" field in config.json  
+    (2) Run commend line which is similar to step 3  
+    (3) Url set "chrome://inspect" in Chrome  
+    (4) Click "Open dedicated DevTools for Node" link  
+    (5) Click "Add connection" button  
+    (6) Add "localhost:9230" in url field  
+        (Debugger listening start from 9230 port in first child process)  
+    (7) Press "F5" key to refresh page  
+    (8) Click "inspect" link in Remote Target  
+
+5. Debug main task use Chrome DevTools (Optional):  
+    (1) Run command line which is different from step 3:  
+    > paraemu --inspect-brk ./config
+
     (2) Url set "chrome://inspect" in Chrome  
-    (3) Click "Open dedicated DevTools for Node"  
-    (4) Click "Add connection"  
-    (5) Add "localhost:9230" in url field (Debugger listening start from 9230 port)  
-    (6) Press "F5" to refresh page  
-    (7) Click "inspect" link in Remote Target  
+    (3) Click"Open dedicated DevTools for Node" link  
+    (4) Click "Add connection" button  
+    (5) Add "localhost:9229" in url field  
+        (Debugger listening start from 9229 port in main process)  
+    (6) Press "F5" key to refresh page  
+    (7) Click "inspect" link in Remote Target
 
 ### Noun Definition ###
 
