@@ -53,7 +53,7 @@
             {
                 "root": "./content/sub3",
                 "script": "./worker3.js",
-                "env": [ "--experimental-worker" ]
+                "env": [ "--experimental-worker", "--inspect-brk" ]
             }
         ]
     }
@@ -109,7 +109,7 @@
 
     // "...args" is "rest parameter"
     const callback = (e, ...args) => {
-        console.log(e.sender);
+        console.log(e.sender);              // sender info
         console.log(e.target);
         console.log(e.type);                // event name
         console.log(args);
@@ -189,6 +189,15 @@
 
 3. Run command line:
     > paraemu ./config.json
+
+4. Debug use Chrome DevTools:  
+    (1) Add "--inspect-brk" in "env" field in config.json  
+    (2) Url set "chrome://inspect" in Chrome  
+    (3) Click "Open dedicated DevTools for Node"  
+    (4) Click "Add connection"  
+    (5) Add "localhost:9230" in url field (Debugger listening start from 9230 port)  
+    (6) Press "F5" to refresh page  
+    (7) Click "inspect" link in Remote Target  
 
 ### Noun Definition ###
 

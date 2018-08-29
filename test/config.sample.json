@@ -12,7 +12,7 @@
         {
             "root": "./content/sub3",
             "script": "./worker3.js",
-            "env": [ "--experimental-worker" ]
+            "env": [ "--experimental-worker", "--inspect-brk" ]
         }
     ]
 }
