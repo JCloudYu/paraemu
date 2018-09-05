@@ -18,7 +18,7 @@
 		JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 		JOB_LIST.push(JOB_CONN);
 		
-		JOB_CONN.on( '--paraemu-e-event', __RECEIVE_EVENT);
+		JOB_CONN.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVE_EVENT);
 		return JOB_CONN;
 	};
 	// endregion
@@ -29,35 +29,27 @@
 		configurable:false, writable:false, enumerable:false
 	});
 	parentPort.on=(event, ...args)=>{
-		if ( event === 'message' ) {
-			return EXPORTED.on( 'message', ...args );
-		}
-		
+		if ( event === 'message' ) return;
 		return parentPort.__on(event, ...args);
 	};
 	// endregion
 	
 	// region [ Handle core events ]
-	EXPORTED.on( '--paraemu-e-event', __RECEIVE_EVENT);
+	EXPORTED.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVE_EVENT);
 	parentPort.__on( 'message', (msg)=>{
-		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
-			EXPORTED.__emit( 'message', {type:'message'}, msg );
-			return;
-		}
+		if ( Object(msg) !== msg ) { return; }
 		
-		let {sender, target, event, eventData} = msg;
-		eventData = Array.isArray(eventData) ?  eventData : [];
-		let [,, t_job=null] = target ? target.split('-') : [null, null, null];
+		let [,, t_job=null] = msg.target ? msg.target.split('-') : [null, null, null];
 		
 		if ( !t_job ) {
 			for( let _job of JOB_LIST ) {
-				_job.__emit(event, {type:event, sender, target}, ...eventData)
+				_job.__dispatch(msg);
 			}
 		}
 		else {
 			let _job = JOB_MAP[t_job];
 			if ( _job ) {
-				_job.__emit(event, {type:event, sender, target}, ...eventData)
+				_job.__dispatch(msg, false);
 			}
 		}
 	});

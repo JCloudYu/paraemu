@@ -23,14 +23,14 @@
 	});
 	EXPORTED.send=(target, event, ...args)=>{
 		const eventInfo = {
-			type:'paraemu-event',
+			type:paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 			target:target,
 			sender:EXPORTED.groupId,
 			event:event,
 			eventData:args
 		};
 	
-		EXPORTED.__emit( '--paraemu-e-event', eventInfo )
+		EXPORTED.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, eventInfo )
 	};
 	EXPORTED.emit=(event, ...args)=>{
 		EXPORTED.send( null, event, ...args );
@@ -78,7 +78,7 @@
 	
 	// region [ Core events processing logic ]
 	EXPORTED
-	.on( '--paraemu-e-event', (eventInfo, source=null)=>{
+	.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, (eventInfo, source=null)=>{
 		// Parse event target information
 		let t_group, t_task, t_inst;
 		if ( !eventInfo.target ) {
@@ -126,7 +126,7 @@
 			sender: [EXPORTED.groupId, eventInfo.sender].join('-'),
 		});
 	
-		EXPORTED.__emit( '--paraemu-e-event', eventInfo );
+		EXPORTED.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, eventInfo );
 	});
 	// endregion
 })();

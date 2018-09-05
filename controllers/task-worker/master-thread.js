@@ -21,7 +21,7 @@
 			ASYNC_JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 			ASYNC_JOB_LIST.push(JOB_CONN);
 			
-			JOB_CONN.on( '--paraemu-e-event', __RECEIVING_EVENT);
+			JOB_CONN.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVING_EVENT);
 			return JOB_CONN;
 		}
 		else {
@@ -47,8 +47,15 @@
 			worker
 			.on( 'exit', __WORKER_EXITED)
 			.on( 'message', (msg)=>{
-				if ( Object(msg) === msg && msg.type === "paraemu-event" ) {
-					__RECEIVING_EVENT(msg);
+				if ( !(Object(msg) === msg) ) {
+					return;
+				}
+			
+				switch(msg.type) {
+					case paraemu.SYSTEM_EVENT.CUSTOM_EVENT:
+					case paraemu.SYSTEM_EVENT.DELIVERY_EVENT:
+						__RECEIVING_EVENT(msg);
+						break;
 				}
 			});
 			return worker;
@@ -62,36 +69,29 @@
 		configurable:false, writable:false, enumerable:false
 	});
 	process.on=(event, ...args)=>{
-		if ( event === 'message' ) {
-			return EXPORTED.on( 'message', ...args );
-		}
+		if ( event === 'message' ) return;
 		
 		return process.__on(event, ...args);
 	};
 	// endregion
 	
 	// region [ Handle core events ]
-	EXPORTED.on( '--paraemu-e-event', __RECEIVING_EVENT);
+	EXPORTED.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVING_EVENT);
 	process.__on( 'message', (msg)=>{
-		if ( Object(msg) !== msg || msg.type !== "paraemu-event" ) {
-			EXPORTED.__emit( 'message', {type:'message'}, msg );
-			return;
-		}
-		
+		if ( Object(msg) !== msg ) { return; }
+
 		// Send to all emitters
-		let {sender, target, event, eventData} = msg;
-		eventData = Array.isArray(eventData) ?  eventData : [];
-		let [,, t_job=null] = target ? target.split('-') : [null, null, null];
+		let [,,t_job=null] = msg.target ? msg.target.split('-') : [null, null, null];
 		
 		if ( !t_job ) {
 			for( let _job of ASYNC_JOB_LIST ) {
-				_job.__emit(event, {type:event, sender, target}, ...eventData)
+				_job.__dispatch(msg);
 			}
 		}
 		else {
 			let _job = ASYNC_JOB_MAP[t_job];
 			if ( _job ) {
-				_job.__emit(event, {type:event, sender, target}, ...eventData)
+				_job.__dispatch(msg, false);
 			}
 		}
 		

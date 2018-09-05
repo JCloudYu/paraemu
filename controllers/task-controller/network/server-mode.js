@@ -46,8 +46,8 @@
 						groupId:event.groupId
 					});
 					
-					event.__emit( '--paraemu-e-event', {
-						type: 'paraemu-event',
+					event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+						type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 						sender: message.groupId,
 						target: null,
 						event: 'net-group-attach'
@@ -59,8 +59,9 @@
 				
 				if ( !socket.valid ) return;
 				switch( message.type ) {
-					case "paraemu-event":
-						event.__emit( '--paraemu-e-event', message, socket );
+					case paraemu.SYSTEM_EVENT.CUSTOM_EVENT:
+					case paraemu.SYSTEM_EVENT.DELIVERY_EVENT:
+						event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, message, socket );
 						break;
 					
 					default:
@@ -73,8 +74,8 @@
 				if ( socket.groupId ) {
 					delete conns[socket.groupId];
 					
-					event.__emit( '--paraemu-e-event', {
-						type: 'paraemu-event',
+					event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+						type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 						sender: socket.groupId,
 						target: null,
 						event: 'net-group-detach'
@@ -83,8 +84,8 @@
 			});
 		})
 		.on( 'error', (err)=>{
-			event.__emit( '--paraemu-e-event', {
-				type: 'paraemu-event',
+			event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+				type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 				sender: event.groupId,
 				target: event.groupId,
 				event: 'net-connection-error',
@@ -92,8 +93,8 @@
 			});
 		})
 		.listen(hostInfo.port||23400, hostInfo.host||'127.0.0.1', (e)=>{
-			event.__emit( '--paraemu-e-event', {
-				type: 'paraemu-event',
+			event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+				type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 				sender: event.groupId,
 				target: event.groupId,
 				event: 'net-connection-ready'

@@ -1,0 +1,12 @@
+{
+    "processes" : [
+        {
+        	"root": "./content/sub6",
+            "script": "./task1.js"
+        },
+        {
+        	"root": "./content/sub6",
+            "script": "./task2.js"
+        }
+    ]
+}

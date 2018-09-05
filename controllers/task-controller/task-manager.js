@@ -104,7 +104,8 @@
 		}
 		
 		switch( msg.type ) {
-			case "paraemu-event":
+			case paraemu.SYSTEM_EVENT.CUSTOM_EVENT:
+			case paraemu.SYSTEM_EVENT.DELIVERY_EVENT:
 				Object.assign(msg, {
 					sender: [worker._taskId, msg.sender].join('-'),
 					target: msg.target ? `${msg.target}` : null

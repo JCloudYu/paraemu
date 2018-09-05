@@ -22,8 +22,8 @@
 				socket.groupId = message.groupId;
 				socket.valid = true;
 				
-				event.__emit( '--paraemu-e-event', {
-					type: 'paraemu-event',
+				event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+					type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 					sender: event.groupId,
 					target: event.groupId,
 					event: 'net-connection-ready',
@@ -38,8 +38,9 @@
 			
 			if ( !socket.valid ) return;
 			switch( message.type ) {
-				case "paraemu-event":
-					event.__emit( '--paraemu-e-event', message, socket );
+				case paraemu.SYSTEM_EVENT.CUSTOM_EVENT:
+				case paraemu.SYSTEM_EVENT.DELIVERY_EVENT:
+					event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, message, socket );
 					break;
 				
 				default:
@@ -48,8 +49,8 @@
 		})
 		.on( 'error', (err)=>{
 			socket.valid = false;
-			event.__emit( '--paraemu-e-event', {
-				type: 'paraemu-event',
+			event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+				type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 				sender: event.groupId,
 				target: event.groupId,
 				event: 'net-connection-error',
@@ -59,8 +60,8 @@
 		.on( 'close', (hasError)=>{
 			socket.valid = false;
 			if ( socket.groupId ) {
-				event.__emit( '--paraemu-e-event', {
-					type: 'paraemu-event',
+				event.__emit( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, {
+					type: paraemu.SYSTEM_EVENT.CUSTOM_EVENT,
 					sender: event.groupId,
 					target: event.groupId,
 					event: 'net-connection-removed',

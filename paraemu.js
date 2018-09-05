@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 	
+	require( './lib/constants' );
 	require( './lib/unique_timeout' );
 	require( './lib/misc' );
 	global.obtain = require;
