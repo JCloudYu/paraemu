@@ -13,8 +13,10 @@
 	.on( 'identification', async(e)=>{
 		try {
 			console.log( "[TASK2] Receiving 'identification' event!" );
+			let prev = Date.now();
 			let response = await pemu.deliver( e.sender, 'identification-received', "This is task2!" );
-			console.log( `[TASK2] Get response for 'identification-received' event! (${response})`);
+			let diff = (Date.now() - prev)/1000;
+			console.log( `[TASK2] Get response for 'identification-received' event in ${diff} seconds...! (${response})`);
 		}
 		catch(e){
 			console.log( "[TASK2] No response...." );
