@@ -12,8 +12,7 @@
 		"test-client1": "node ./paraemu-cli.js ./test/config.client1.json",
 		"test-client2": "node ./paraemu-cli.js ./test/config.client2.json",
 		"test-server-riddle": "node ./paraemu-cli.js ./test/config.server-riddle.json",
-		"test-client-riddle": "node ./paraemu-cli.js ./test/config.client-riddle.json",
-		"beautify": "eslint --fix *.js ./"
+		"test-client-riddle": "node ./paraemu-cli.js ./test/config.client-riddle.json"
 	},
 	"repository": {
 		"type": "git",
@@ -33,12 +32,6 @@
 		"url": "https://github.com/JCloudYu/paraemu/issues"
 	},
 	"homepage": "https://github.com/JCloudYu/paraemu#readme",
-	"devDependencies": {
-		"eslint": "^4.19.1",
-		"eslint-config-airbnb-base": "^13.0.0",
-		"eslint-plugin-es-beautifier": "^1.0.1",
-		"eslint-plugin-import": "^2.13.0"
-	},
 	"dependencies": {
 		"json-socket": "^0.3.0"
 	}
