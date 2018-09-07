@@ -15,8 +15,8 @@
 	
 	// region [ Add execution constants and other apis ]
 	Object.setConstant(EXPORTED, { tag:EXEC_CONF.tag, args:EXEC_CONF.args });
-	EXPORTED.job=(...args)=>{
-		if ( args.length === 0 ) {
+	EXPORTED.job=(...input_args)=>{
+		if ( input_args.length === 0 ) {
 			const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
 			ASYNC_JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 			ASYNC_JOB_LIST.push(JOB_CONN);
@@ -25,10 +25,10 @@
 			return JOB_CONN;
 		}
 		else {
-			let [scriptPath, options={}] = args;
+			let [scriptPath, options={}, ...args] = input_args;
 			let jobId = GEN_RANDOM_ID();
 			options.workerData = {
-				args: options.workerData,
+				args: options.workerData || args,
 				groupId: EXPORTED.groupId,
 				taskId: EXPORTED.taskId,
 				jobId: jobId
