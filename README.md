@@ -194,6 +194,7 @@
 
     try {
         // If receive.js do not use "respondWith" function, deliver await only wait up to 2 seconds.
+        // In there, target_id must be a full id string. 
         let response = await pemu.deliver('target_id', 'trigger_event_name', [arg1], [arg2], [...])
         console.log(response);
     }
