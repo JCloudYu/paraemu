@@ -187,6 +187,32 @@
     pemu.on('net-connection-error', callback);      // your client has gone wrong
     ```
 
+    (4-1) Send and Receive Example (Send Side):
+    ```javascript
+    // ./send.js
+    const pemu = require('paraemu');
+
+    try {
+        // If receive.js do not use "respondWith" function, deliver await only wait up to 2 seconds.
+        let response = await pemu.deliver('target_id', 'trigger_event_name', [arg1], [arg2], [...])
+        console.log(response);
+    }
+    catch (error) {
+        // If send.js disconnected to receive.js, deliver await only wait up to 30 seconds and throw exception.
+        console.log(error);
+    }
+    ```
+
+    (4-2) Send and Receive Example (Receive Side):
+    ```javascript
+    // ./receive.js
+    const pemu = require('paraemu');
+
+    pemu.on('trigger_event_name', (e, ...args) => {
+        e.respondWith('Receive message');
+    });
+    ```
+
     * Please refer to [Event Emitter](https://nodejs.org/api/events.html) for other usages.
 
 3. Run command line:
