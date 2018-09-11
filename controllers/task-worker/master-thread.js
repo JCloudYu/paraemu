@@ -27,11 +27,14 @@
 		else {
 			let [scriptPath, options={}, ...args] = input_args;
 			let jobId = GEN_RANDOM_ID();
+			if ( options.hasOwnProperty('workerData') ) {
+				args = options.workerData;
+			}
+			
 			options.workerData = {
-				args: options.workerData || args,
+				args, jobId,
 				groupId: EXPORTED.groupId,
-				taskId: EXPORTED.taskId,
-				jobId: jobId
+				taskId: EXPORTED.taskId
 			};
 			
 			const worker = new Thread(scriptPath, options);
