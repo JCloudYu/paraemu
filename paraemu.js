@@ -30,8 +30,6 @@
 		else {
 			module.exports = require( './controllers/task-worker/worker-thread' )
 		}
-		
-//		module.exports = require( './controllers/paraemu-task-worker' );
 	}
 	
 	

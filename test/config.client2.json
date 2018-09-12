@@ -5,7 +5,7 @@
 	},
     "processes" : [
         {
-            "root": "./content/client/proc1",
+            "root": "./content/client/proc2",
             "script": "./task.js"
         },
         {
