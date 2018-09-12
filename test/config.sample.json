@@ -13,6 +13,34 @@
             "root": "./content/sub3",
             "script": "./worker3.js",
             "env": [ "--experimental-worker", "--inspect-brk" ]
+        },
+        {
+        	"tag": "proc4",
+        	"disabled": true,
+            "root": "./content/sub3",
+            "script": "./worker3.js",
+            "env": [ "--experimental-worker", "--inspect-brk" ]
+        },
+        {
+        	"tag": "proc5",
+        	"disabled": true,
+            "root": "./content/sub3",
+            "script": "./worker3.js",
+            "env": [ "--experimental-worker", "--inspect-brk" ]
+        },
+        {
+        	"tag": "proc6",
+        	"disabled": true,
+            "root": "./content/sub3",
+            "script": "./worker3.js",
+            "env": [ "--experimental-worker", "--inspect-brk" ]
+        },
+        {
+        	"tag": "proc7",
+        	"disabled": true,
+            "root": "./content/sub3",
+            "script": "./worker3.js",
+            "env": [ "--experimental-worker", "--inspect-brk" ]
         }
     ]
 }

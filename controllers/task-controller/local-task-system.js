@@ -54,6 +54,8 @@
 		const {processes:PROCESSES=[]} = CONFIG;
 		
 		PROCESSES.forEach((process)=>{
+			if ( process.disabled ) { return; }
+		
 			const workerId = GEN_RANDOM_ID();
 			const {script, root=null, tag=workerId, args=[], env:argv=[]} = process;
 			
