@@ -13,7 +13,7 @@
 		socket.api = new j_sock(socket);
 		
 		socket
-		.connect(remoteInfo.port, remoteInfo.host)
+		.connect(remoteInfo.port||23400, remoteInfo.host||'127.0.0.1')
 		.on( 'connect', ()=>{
 			socket.api.sendMessage({type:'paraemu-group-info', groupId:event.groupId});
 		})
