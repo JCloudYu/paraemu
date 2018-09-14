@@ -24,7 +24,7 @@
 				"NODE-OPTIONS:\n" +
 				"    All environmental control options for node environment\n" +
 				"\n" +
-				"RUN_TIME-ARGS:\n" +
+				"RUNTIME-ARGS:\n" +
 				"    -R,  --remote     The remote master paraemu group info this group will link to\n" +
 				"    -S,  --server     This group will be instantiated as a master group\n" +
 				"\n"
