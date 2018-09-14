@@ -9,18 +9,24 @@
 	const packageConf = JSON.parse(require('fs').readFileSync(`${__dirname}/package.json`));
 	const json_check = /^.*\.json$/;
 	
+	const BYPASS_OPTIONS = [ '-h', '--help', '-v', '-vv', '--version', '--version-detail' ];
 	const exec_args = [];
-	let configFound = false;
+	let configFound = false, should_continue = false;
 	for( let arg of argv ) {
 		if ( json_check.test(arg) ) {
 			configFound = configFound || true;
+			should_continue = should_continue || true;
 			exec_args.push(`${__dirname}/run-basic.js`);
+		}
+		
+		if ( BYPASS_OPTIONS.indexOf(arg) >= 0 ) {
+			should_continue = should_continue || true;
 		}
 		
 		exec_args.push(arg);
 	}
 	
-	if ( !configFound ) {
+	if ( !configFound && !should_continue ) {
 		process.stderr.write( 'Missing required runtime_conf file!\n\n' );
 		argv[0] = '-h';
 	}
