@@ -15,6 +15,7 @@
 		let arg = argv.shift();
 		switch ( arg ) {
 			case "--remote":
+			case "-R":
 			{
 				let url = argv.shift();
 				if ( !PREFIX_CHECK.test(url) ) {
@@ -30,6 +31,7 @@
 			}
 			
 			case "--server":
+			case "-S":
 			{
 				let url = argv.shift();
 				if ( !PREFIX_CHECK.test(url) ) {
