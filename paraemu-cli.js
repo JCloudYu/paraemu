@@ -10,6 +10,20 @@
 	const json_check = /^.*\.json$/;
 	
 	const exec_args = [];
+	let configFound = false;
+	for( let arg of argv ) {
+		if ( json_check.test(arg) ) {
+			configFound = configFound || true;
+			exec_args.push(`${__dirname}/run-basic.js`);
+		}
+		
+		exec_args.push(arg);
+	}
+	
+	if ( !configFound ) {
+		process.stderr.write( 'Missing required runtime_conf file!\n\n' );
+		argv[0] = '-h';
+	}
 	
 	switch( argv[0] ) {
 		case "--help":
@@ -61,12 +75,5 @@
 	
 	
 	
-	for( let arg of argv ) {
-		if ( json_check.test(arg) ) {
-			exec_args.push(`${__dirname}/run-basic.js`);
-		}
-		
-		exec_args.push(arg);
-	}
 	child_process.execFileSync( exec_env[0], exec_args, { stdio:'inherit' });
 })();
