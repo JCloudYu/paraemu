@@ -125,6 +125,9 @@
 
     // paraemu default event
     pemu.on('tasks-ready', callback);       // all scripts are ready
+
+    // paraemu default property
+    console.log(pemu.uniqueId);
     ```
 
     (2-1) Worker Threads Example (Main Thread Side):
