@@ -26,7 +26,7 @@
                 "tag": undefined | @string,
                 "root": undefined | @string,        // root path
                 "script": @string,                  // execute file name
-                "args": undefined | [ @any, ... ],  // node js command line arguments
+                "args": undefined | @any,           // node js command line arguments
                 "env": undefined | [ @string, ... ] // node js command line options
             },
             ...
