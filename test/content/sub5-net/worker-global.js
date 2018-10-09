@@ -2,7 +2,8 @@
 	'use strict';
 	
 	const pemu = require('../../../paraemu');
-	const RIDDLE_TIMEOUT = setTimeout.no_repeat();
+	const {Helper:{UniqueTimeout}} = require( 'pemu-lib' );
+	const RIDDLE_TIMEOUT = UniqueTimeout();
 	
 	let
 	string  = "[WORKER4] Worker Started\n";

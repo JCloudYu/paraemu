@@ -4,11 +4,12 @@
 	const path			 = require( 'path' );
 	const fs			 = require( 'fs' );
 	const {EventEmitter} = require( 'events' );
+	const {Helper:{GenRandomID, SetConstant}} = require( 'pemu-lib' );
 	
 	const GEN_RANDOM_ID = GenRandomID.bind(null, 10);
 	const TASK_MANAGER = require( './task-manager' );
 	const EXPORTED = module.exports = new EventEmitter();
-	Object.setConstant(EXPORTED, {groupId:GEN_RANDOM_ID()});
+	SetConstant(EXPORTED, {groupId:GEN_RANDOM_ID()});
 	
 	const SESSION_INFO = { CONFIG:null, DESCRIPTOR:null, DEFAULT_DIR:null };
 	

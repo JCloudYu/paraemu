@@ -2,7 +2,8 @@
 	"use strict";
 	
 	const {EventEmitter} = require('events');
-	const {GenObjectId}  = obtain( './lib/objectid' );
+	const {ObjectId:{GenObjectId}, Helper:{GenRandomID, SetConstant}} = require( 'pemu-lib' );
+	
 	const GEN_RANDOM_ID  = GenRandomID.bind(null, 16);
 	const DELIVERY_TIMEOUT = 30 * 1000;
 	const DELIVERY_RESPONSE_TIMEOUT = 2 * 1000;
@@ -14,7 +15,7 @@
 		const PASSIVE_DELIVERY_POOL = {};
 		
 		// Register constants
-		Object.setConstant(JOB_INST, {
+		SetConstant(JOB_INST, {
 			jobId: JOB_ID, groupId, taskId,
 			uniqueId: `${groupId}-${taskId}-${JOB_ID}`
 		});
@@ -22,7 +23,7 @@
 		
 		
 		// region [ Prepare APIs for developers ]
-		Object.setConstant(JOB_INST, {
+		SetConstant(JOB_INST, {
 			__emit:JOB_INST.emit.bind(JOB_INST),
 			__dispatch:(eventInfo, broadcast=true)=>{
 				switch( eventInfo.type ) {

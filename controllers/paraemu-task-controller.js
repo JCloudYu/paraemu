@@ -1,8 +1,8 @@
 (()=>{
 	"use strict";
 	
-	
-	const NET_TIMEOUT = setTimeout.no_repeat();
+	const {Helper:{UniqueTimeout}} = require( 'pemu-lib' );
+	const NET_TIMEOUT = UniqueTimeout();
 	const EXPORTED = module.exports = require( './task-controller/local-task-system' );
 	
 	// Prepare network connections after task workers are ready

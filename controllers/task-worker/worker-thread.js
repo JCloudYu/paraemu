@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 
+	const {Helper:{SetConstant}} = require( 'pemu-lib' );
 	const {workerData:WORKER_DATA, parentPort} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(
@@ -10,7 +11,7 @@
 	const JOB_LIST	= [ EXPORTED ];
 	
 	// region [ Add execution constants and other apis ]
-	Object.setConstant(EXPORTED, {
+	SetConstant(EXPORTED, {
 		args:WORKER_DATA.args
 	});
 	EXPORTED.job=()=>{

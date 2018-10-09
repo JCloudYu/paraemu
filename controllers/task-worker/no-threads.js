@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 
+	const {Helper:{SetConstant}} = require( 'pemu-lib' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);
@@ -10,7 +11,7 @@
 	
 	
 	// region [ Add execution constants and other apis ]
-	Object.setConstant(EXPORTED, {
+	SetConstant(EXPORTED, {
 		tag:EXEC_CONF.tag,
 		args:EXEC_CONF.args
 	});

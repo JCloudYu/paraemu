@@ -1,10 +1,7 @@
 (()=>{
 	"use strict";
 	
-	require( './lib/constants' );
-	require( './lib/unique_timeout' );
-	require( './lib/misc' );
-	global.obtain = require;
+	require( 'pemu-lib' );
 	
 	let WORKER_THREAD_ENABLED = false;
 	let THREAD_MASTER_MODE	  = true;

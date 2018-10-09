@@ -3,13 +3,14 @@
 	
 	const cluster = require( 'cluster' );
 	const {EventEmitter} = require( 'events' );
+	const {Helper:{UniqueTimeout}} = require( 'pemu-lib' );
 	const EXPORTED = module.exports = new EventEmitter();
 	
 	
 	const IS_WIN = (require( 'os' ).platform() === "win32");
-	const ONLINE_TIMEOUT = setTimeout.no_repeat();
-	const READY_TIMEOUT = setTimeout.no_repeat();
-	const EXIT_TIMEOUT	= setTimeout.no_repeat();
+	const ONLINE_TIMEOUT = UniqueTimeout();
+	const READY_TIMEOUT = UniqueTimeout();
+	const EXIT_TIMEOUT	= UniqueTimeout();
 	
 	// Runtime state control
 	const WORKER_STATE_MAP	= {};

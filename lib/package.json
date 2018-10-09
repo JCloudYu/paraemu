@@ -1,0 +1,17 @@
+{
+	"name": "pemu-lib",
+	"version": "0.0.0",
+	"description": "The local library used by paraemu",
+	"main": "lib.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"ParallelEmulator",
+		"Paraemu",
+		"Pemu"
+	],
+	"author": "JCloudYu",
+	"license": "ISC",
+	"private": true
+}

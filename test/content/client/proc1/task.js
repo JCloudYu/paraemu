@@ -14,6 +14,7 @@
 		console.log(logMsg);
 		
 		
+		
 		pemu.emit( 'join-signal' );
 	})
 	.on( 'net-group-detach', (e)=>{
