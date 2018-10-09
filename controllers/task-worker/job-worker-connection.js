@@ -2,7 +2,7 @@
 	"use strict";
 	
 	const {EventEmitter} = require('events');
-	const {ObjectId:{GenObjectId}, Helper:{GenRandomID, SetConstant}} = require( 'pemu-lib' );
+	const {ObjectId:{GenObjectId}, Helper:{GenRandomID, SetConstant}} = include( 'lib' );
 	
 	const GEN_RANDOM_ID  = GenRandomID.bind(null, 16);
 	const DELIVERY_TIMEOUT = 30 * 1000;

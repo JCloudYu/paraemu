@@ -3,7 +3,7 @@
 
 	const {Worker:Thread} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
-	const {Helper:{GenRandomID, SetConstant}} = require( 'pemu-lib' );
+	const {Helper:{GenRandomID, SetConstant}} = include( 'lib' );
 	
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);

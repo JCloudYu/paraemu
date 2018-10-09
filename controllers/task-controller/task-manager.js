@@ -3,7 +3,7 @@
 	
 	const cluster = require( 'cluster' );
 	const {EventEmitter} = require( 'events' );
-	const {Helper:{UniqueTimeout}} = require( 'pemu-lib' );
+	const {Helper:{UniqueTimeout}} = include( 'lib' );
 	const EXPORTED = module.exports = new EventEmitter();
 	
 	

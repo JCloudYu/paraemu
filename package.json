@@ -1,6 +1,6 @@
 {
 	"name": "paraemu",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "An working enviroment that provides a simplified interface for developers who want to fully parallelize node execution",
 	"main": "paraemu.js",
 	"scripts": {
@@ -31,8 +31,5 @@
 	"bugs": {
 		"url": "https://github.com/JCloudYu/paraemu/issues"
 	},
-	"homepage": "https://github.com/JCloudYu/paraemu#readme",
-	"dependencies": {
-		"pemu-lib": "file:lib"
-	}
+	"homepage": "https://github.com/JCloudYu/paraemu#readme"
 }

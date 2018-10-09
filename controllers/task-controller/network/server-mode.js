@@ -2,7 +2,7 @@
 	"use strict";
 	
 	const net = require('net');
-	const {Helper:{SendPacket, RegisterPacketReceiver}} = require('pemu-lib');
+	const {Helper:{SendPacket, RegisterPacketReceiver}} = include( 'lib' );
 	
 	module.exports = (envInfo)=>{
 		const {info: hostInfo, event} = envInfo;

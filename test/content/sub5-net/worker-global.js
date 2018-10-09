@@ -2,7 +2,7 @@
 	'use strict';
 	
 	const pemu = require('../../../paraemu');
-	const {Helper:{UniqueTimeout}} = require( 'pemu-lib' );
+	const {Helper:{UniqueTimeout}} = include( 'lib' );
 	const RIDDLE_TIMEOUT = UniqueTimeout();
 	
 	let

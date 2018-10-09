@@ -1,7 +1,8 @@
 (()=>{
 	"use strict";
 	
-	require( 'pemu-lib' );
+	require( './lib' );
+	global.include = (path)=>{ return require(`./${path}`); };
 	
 	let WORKER_THREAD_ENABLED = false;
 	let THREAD_MASTER_MODE	  = true;

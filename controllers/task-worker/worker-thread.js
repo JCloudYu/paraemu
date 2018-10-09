@@ -1,7 +1,7 @@
 (()=>{
 	"use strict";
 
-	const {Helper:{SetConstant}} = require( 'pemu-lib' );
+	const {Helper:{SetConstant}} = include( 'lib' );
 	const {workerData:WORKER_DATA, parentPort} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(

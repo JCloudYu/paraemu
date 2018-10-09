@@ -1,7 +1,7 @@
 (()=>{
 	"use strict";
 	
-	const {Helper:{UniqueTimeout}} = require( 'pemu-lib' );
+	const {Helper:{UniqueTimeout}} = include( 'lib' );
 	const NET_TIMEOUT = UniqueTimeout();
 	const EXPORTED = module.exports = require( './task-controller/local-task-system' );
 	

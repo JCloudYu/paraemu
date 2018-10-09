@@ -1,7 +1,7 @@
 (()=>{
 	"use strict";
 
-	const {Helper:{SetConstant}} = require( 'pemu-lib' );
+	const {Helper:{SetConstant}} = include( 'lib' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
 	const EXPORTED	= module.exports = JOB_WORKER_CONN(EXEC_CONF.groupId, EXEC_CONF.taskId);
