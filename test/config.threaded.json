@@ -4,7 +4,7 @@
         	"tag": "calculator",
         	"root": "./content/sub5",
             "script": "./worker-calculator.js",
-            "env": [ "--experimental-worker" ]
+            "env": [ "--experimental-worker", "--no-warnings" ]
         },
         {
         	"tag":"riddle-provider",
