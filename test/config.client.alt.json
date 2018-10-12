@@ -1,0 +1,48 @@
+{
+	"remote": {
+		"host": "127.0.0.1",
+		"port": 23410
+	},
+	"processes": [
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		},
+		{
+			"root": "./content/client/proc3",
+			"script": "./task.js"
+		}
+	]
+}
