@@ -23,9 +23,16 @@
 		
 		
 		// region [ Prepare APIs for developers ]
+		JOB_INST.__in = null;
+		
 		SetConstant(JOB_INST, {
 			__emit:JOB_INST.emit.bind(JOB_INST),
-			__dispatch:(eventInfo, broadcast=true)=>{
+			__dispatch:function(eventInfo, broadcast=true) {
+				if ( typeof this.__in === "function" ) {
+					eventInfo = this.__in(eventInfo);
+					if ( !eventInfo ) { return; }
+				}
+			
 				switch( eventInfo.type ) {
 					case paraemu.SYSTEM_EVENT.CUSTOM_EVENT:
 					{
