@@ -33,5 +33,8 @@
 	"bugs": {
 		"url": "https://github.com/JCloudYu/paraemu/issues"
 	},
-	"homepage": "https://github.com/JCloudYu/paraemu#readme"
+	"homepage": "https://github.com/JCloudYu/paraemu#readme",
+	"dependencies": {
+		"beson": "^0.9.10"
+	}
 }
