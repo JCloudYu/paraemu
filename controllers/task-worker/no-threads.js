@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 
+	const beson = require( 'beson' );
 	const {Helper:{SetConstant}} = include( 'lib' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const EXEC_CONF = JSON.parse(process.env.paraemu);
@@ -40,6 +41,9 @@
 	// region [ Handle core events ]
 	EXPORTED.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVING_EVENT);
 	process.__on( 'message', (msg)=>{
+		const eventData = msg.eventData;
+		if( eventData && typeof eventData === 'string' ) msg.eventData = beson.Deserialize( Buffer.from( eventData, 'base64' ) );
+
 		if ( Object(msg) !== msg ) { return; }
 		
 		let [,, t_job=null] = msg.target ? msg.target.split('-') : [null, null, null];
@@ -80,6 +84,9 @@
 	
 	
 	function __RECEIVING_EVENT(eventInfo){
+		const eventData = eventInfo.eventData;
+		if( eventData && eventData.length > 0 ) eventInfo.eventData = Buffer.from( beson.Serialize(eventData) ).toString('base64');
+
 		process.send(eventInfo);
 	}
 })();

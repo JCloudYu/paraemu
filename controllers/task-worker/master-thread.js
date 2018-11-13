@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 
+	const beson = require( 'beson' );
 	const {Worker:Thread} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
 	const {Helper:{GenRandomID, SetConstant}} = include( 'lib' );
@@ -84,6 +85,9 @@
 	// region [ Handle core events ]
 	EXPORTED.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVING_EVENT);
 	process.__on( 'message', (msg)=>{
+		const eventData = msg.eventData;
+		if( eventData && typeof eventData === 'string' ) msg.eventData = beson.Deserialize( Buffer.from( eventData, 'base64' ) );
+
 		if ( Object(msg) !== msg ) { return; }
 
 		// Send to all emitters
@@ -132,6 +136,9 @@
 	
 	
 	function __RECEIVING_EVENT(eventInfo){
+		const eventData = eventInfo.eventData;
+		if( eventData && eventData.length > 0 ) eventInfo.eventData = Buffer.from( beson.Serialize(eventData) ).toString('base64');
+
 		process.send(eventInfo);
 	}
 	function __WORKER_EXITED(worker){
