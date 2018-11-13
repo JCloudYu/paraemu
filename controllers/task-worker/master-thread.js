@@ -20,6 +20,7 @@
 	EXPORTED.job=(...input_args)=>{
 		if ( input_args.length === 0 ) {
 			const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
+			JOB_CONN.__in = EXPORTED.__in;
 			ASYNC_JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 			ASYNC_JOB_LIST.push(JOB_CONN);
 			
