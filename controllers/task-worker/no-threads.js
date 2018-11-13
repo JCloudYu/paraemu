@@ -17,6 +17,7 @@
 	});
 	EXPORTED.job=()=>{
 		const JOB_CONN = JOB_WORKER_CONN(EXPORTED.groupId, EXPORTED.taskId);
+		JOB_CONN.__in = EXPORTED.__in;
 		JOB_MAP[ JOB_CONN.jobId ] = JOB_CONN;
 		JOB_LIST.push(JOB_CONN);
 		
