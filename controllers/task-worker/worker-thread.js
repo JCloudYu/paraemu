@@ -66,6 +66,6 @@
 	
 	
 	function __RECEIVE_EVENT(eventInfo){
-		parentPort.postMessage(eventInfo);
+		parentPort.postMessage(beson.Serialize(eventInfo));
 	}
 })();

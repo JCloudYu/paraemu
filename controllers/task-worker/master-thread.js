@@ -54,6 +54,8 @@
 			worker
 			.on( 'exit', __WORKER_EXITED)
 			.on( 'message', (msg)=>{
+				msg = beson.Deserialize(msg);
+			
 				if ( !(Object(msg) === msg) ) {
 					return;
 				}

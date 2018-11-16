@@ -1,6 +1,8 @@
 (()=>{
 	const pemu = require('../../../paraemu');
-	pemu.on('binary', (e, ...result)=>{
-		console.log('Worker Received:', result);
+	
+	pemu.on('binary-in', (e, ...args)=>{
+		console.log( `WORKER ${e.type}`, args );
+		pemu.send( e.sender, 'binary-out', ...args );
 	});
 })();
