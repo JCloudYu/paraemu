@@ -108,7 +108,7 @@
 		
 		// Send to all child workers
 		for( let _worker of WORKER_JOB_LIST ) {
-			try { _worker.postMessage(msg); } catch(e) {}
+			try { _worker.postMessage(beson.Serialize(msg)); } catch(e) {}
 		}
 	});
 	// endregion

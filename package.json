@@ -1,6 +1,6 @@
 {
 	"name": "paraemu",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "An working enviroment that provides a simplified interface for developers who want to fully parallelize node execution",
 	"main": "paraemu.js",
 	"scripts": {
@@ -8,6 +8,7 @@
 		"test-delivery": "node ./paraemu-cli.js ./test/config.delivery.json",
 		"test-async": "node ./paraemu-cli.js ./test/config.no-thread.json",
 		"test-thread": "node ./paraemu-cli.js ./test/config.threaded.json",
+		"test-binary-thread": "node ./paraemu-cli.js ./test/config.binary-thread.json",
 		"test-server": "node ./paraemu-cli.js ./test/config.server.json",
 		"test-client1": "node ./paraemu-cli.js ./test/config.client1.json",
 		"test-client2": "node ./paraemu-cli.js ./test/config.client2.json",

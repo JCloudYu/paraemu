@@ -1,6 +1,7 @@
 (()=>{
 	"use strict";
 
+	const beson = require( 'beson' );
 	const {Helper:{SetConstant}} = include( 'lib' );
 	const {workerData:WORKER_DATA, parentPort} = require( 'worker_threads' );
 	const JOB_WORKER_CONN = require( './job-worker-connection' );
@@ -39,6 +40,8 @@
 	// region [ Handle core events ]
 	EXPORTED.on( paraemu.SYSTEM_HOOK.PARAEMU_EVENT, __RECEIVE_EVENT);
 	parentPort.__on( 'message', (msg)=>{
+		msg = beson.Deserialize(msg);
+	
 		if ( Object(msg) !== msg ) { return; }
 		
 		let [,, t_job=null] = msg.target ? msg.target.split('-') : [null, null, null];

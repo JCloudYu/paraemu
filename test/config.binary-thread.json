@@ -1,0 +1,10 @@
+{
+    "processes" : [
+        {
+        	"tag": "binary",
+        	"root": "./content/binary-thread",
+            "script": "./job.js",
+            "env": [ "--experimental-worker", "--no-warnings" ]
+        }
+    ]
+}
