@@ -36,6 +36,6 @@
 	},
 	"homepage": "https://github.com/JCloudYu/paraemu#readme",
 	"dependencies": {
-		"beson": "~0.9.14"
+		"beson": "^0.9.16"
 	}
 }
