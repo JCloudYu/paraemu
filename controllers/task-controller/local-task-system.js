@@ -75,16 +75,16 @@
 			if ( process.disabled ) { return; }
 		
 			const workerId = GEN_RANDOM_ID();
-			const {script, root=null, tag=workerId, args=[], env:argv=[]} = process;
+			const {script, root=null, tag=workerId, args=[], env:argv=[], delay=0} = process;
 			
-		
+
 			TASK_MANAGER.instantiate({
 				cwd:path.resolve(DEFAULT_DIR, root||''),
 				script:path.resolve(DEFAULT_DIR, root||'', script),
 				module_paths:MODULE_PATH,
 				taskId:workerId,
 				groupId:EXPORTED.groupId,
-				tag, args, argv
+				tag, args, argv, delay
 			});
 		});
 		

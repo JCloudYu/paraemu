@@ -27,29 +27,32 @@
 		
 		},
 		instantiate:(taskInfo)=>{
-			const {groupId, taskId, tag, cwd, script, module_paths, args, argv} = taskInfo;
-			
-			cluster.setupMaster({ cwd, exec:script, execArgv:argv });
-			const worker = cluster.fork({
-				paraemu: JSON.stringify({groupId, taskId, tag, args}),
-				NODE_PATH:module_paths.join(IS_WIN ? ';' : ':')
-			});
-			
-			
-			
-			worker._groupId = groupId;
-			worker._taskId = taskId;
-			worker._tag = tag;
-			
-			
-			
+			const {groupId, taskId, tag, cwd, script, module_paths, args, argv, delay} = taskInfo;
+
 			WORKER_STATE_LIST.push(WORKER_STATE_MAP[taskId]={
-				worker,
+				worker: null,
 				ready_notified:false,
 				instantiated:false,
 				available:false,
-				terminated:false
+				terminated:false,
+				delay
 			});
+			setTimeout(()=>{
+				cluster.setupMaster({ cwd, exec:script, execArgv:argv });
+				const worker = cluster.fork({
+					paraemu: JSON.stringify({groupId, taskId, tag, args}),
+					NODE_PATH:module_paths.join(IS_WIN ? ';' : ':')
+				});
+
+
+
+				worker._groupId = groupId;
+				worker._taskId = taskId;
+				worker._tag = tag;
+
+
+				WORKER_STATE_MAP[taskId].worker = worker;
+			}, delay);
 		},
 		sendMessage:(targetId, eventInfo)=>{
 			for( const {available, worker} of WORKER_STATE_LIST ) {
@@ -68,7 +71,7 @@
 		state.instantiated = true;
 		state.available = true;
 		
-		
+
 		
 		EXPORTED.emit( 'core-state',  {
 			type:'worker-started', id:worker._taskId, tag:worker._tag
