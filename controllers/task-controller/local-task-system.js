@@ -11,7 +11,7 @@
 	const EXPORTED = module.exports = new EventEmitter();
 	SetConstant(EXPORTED, {groupId:GEN_RANDOM_ID()});
 	
-	const SESSION_INFO = { CONFIG:null, DESCRIPTOR:null, DEFAULT_DIR:null };
+	const SESSION_INFO = { CONFIG:null, DEFAULT_DIR:null };
 	
 	
 	
@@ -46,12 +46,29 @@
 	EXPORTED.load=(confPath, options={})=>{
 		// ISSUE: Remember prevent developers from loading again before the termination of existing processes...
 		
+		let default_dir, config;
+		if ( typeof confPath === "string" ) {
+			let descriptorPath = path.resolve(confPath);
+			default_dir = path.dirname(descriptorPath);
+			config = JSON.parse(fs.readFileSync(descriptorPath, 'utf8'))
+		}
+		else
+		if ( Object(confPath) === confPath ) {
+			default_dir = process.cwd();
+			config = confPath;
+		}
+		else {
+			throw new Error( "Argument 1 must be a path to a json file or an object" );
+		}
+		
+		
+		
+		
 		
 		
 		const MODULE_PATH = options.module_paths || [];
-		const DESCRIPTOR  = SESSION_INFO.DESCRIPTOR  = path.resolve(confPath);
-		const DEFAULT_DIR = SESSION_INFO.DEFAULT_DIR = path.dirname(DESCRIPTOR);
-		const CONFIG	  = SESSION_INFO.CONFIG		 = JSON.parse(fs.readFileSync(DESCRIPTOR, 'utf8'));
+		const DEFAULT_DIR = SESSION_INFO.DEFAULT_DIR = confPath.base_root || default_dir;
+		const CONFIG	  = SESSION_INFO.CONFIG		 = config;
 		const {processes:PROCESSES=[]} = CONFIG;
 		
 		PROCESSES.forEach((process)=>{
