@@ -15,6 +15,7 @@
 		
 		socket
 		.connect(remoteInfo.port || 23400, remoteInfo.host || '127.0.0.1')
+		.setTimeout(10000)
 		.on('connect', ()=>{
 			SendPacket(socket, {type: 'paraemu-group-info', groupId: event.groupId});
 		})
@@ -57,6 +58,10 @@
 				event: 'net-connection-error',
 				eventData: [err]
 			});
+		})
+		.on('timeout', ()=>{
+			socket.end();
+			socket.destroy();
 		})
 		.on('close', (hasError)=>{
 			socket.valid = false;

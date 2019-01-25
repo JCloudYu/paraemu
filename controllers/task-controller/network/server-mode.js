@@ -33,6 +33,7 @@
 			
 			
 			socket
+			.setTimeout(10000)
 			.on('error', ()=>{
 				try{ socket.valid = false; } catch(e){}
 			})
@@ -67,6 +68,10 @@
 					default:
 						break;
 				}
+			})
+			.on('timeout', ()=>{
+				socket.end();
+				socket.destroy();
 			})
 			.on('close', (hasError)=>{
 				socket.valid = false;
